@@ -21,7 +21,7 @@ import org.openide.awt.StatusLineElementProvider;
 /**
  * Displays date and time in the status line.
  *
- * @author  Elmar Baumann <eb@elmar-baumann.de>
+ * @author Elmar Baumann
  * @version 2009-04-02
  */
 public final class StatusLineClock implements StatusLineElementProvider {
