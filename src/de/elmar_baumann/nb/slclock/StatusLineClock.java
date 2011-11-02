@@ -17,13 +17,13 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
 import org.openide.awt.StatusLineElementProvider;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Displays date and time in the status line.
- *
  * @author Elmar Baumann
- * @version 2009-04-02
  */
+@ServiceProvider(service = StatusLineElementProvider.class)
 public final class StatusLineClock implements StatusLineElementProvider {
 
     private static final String FORMAT_PATTERN = "  {0} {1} - {2}";
@@ -59,14 +59,12 @@ public final class StatusLineClock implements StatusLineElementProvider {
                 DATE_FORMAT.format(now),
                 TIME_FORMAT.format(now));
     }
-
     private final Runnable clockLabelUpdater = new Runnable() {
 
         public void run() {
             clockLabel.setText(getCurrentDateTimeString());
         }
     };
-
     private final ThreadFactory threadFactory = new ThreadFactory() {
 
         @Override
