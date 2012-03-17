@@ -1,0 +1,294 @@
+package de.elmar_baumann.nb.slclock;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
+import org.openide.util.NbBundle;
+
+/**
+ * @author Elmar Baumann
+ */
+public class StatusLinePreferencesPanel extends javax.swing.JPanel implements PropertyChangeListener {
+
+    private static final long serialVersionUID = 1L;
+    private final List<DateFormatSettingPanel> settingsPanels = new ArrayList<DateFormatSettingPanel>();
+    private boolean listen;
+
+    public StatusLinePreferencesPanel() {
+        initComponents();
+        postInitComponents();
+    }
+
+    private void postInitComponents() {
+        setInfoCustomPattern();
+        restoreFormat();
+        showExample();
+        listen = true;
+    }
+
+    private void restoreFormat() {
+        for (int i = 0; i < settingsPanels.size(); i++) {
+            StatusLinePreferences.restoreDateFormatSettingsPanel(settingsPanels.get(i), i);
+        }
+    }
+
+    private void persistFormat() {
+        if (checkErrorInCustomFormat()) {
+            StatusLinePreferences.persistDateFormatArray(settingsPanels);
+        }
+    }
+
+    private void setInfoCustomPattern() {
+        labelInfoCustomPattern.setText(
+                NbBundle.getMessage(StatusLinePreferencesPanel.class, "StatusLinePreferencesPanel.InfoCustomPattern",
+                DateFormatSelection.CUSTOM_PATTERN));
+    }
+
+    private void reset() {
+        panelSettings1.setDelimiter(" ");
+        panelSettings1.setDateFormatSelection(DateFormatSelection.DAY_OF_WEEK_SHORT);
+        panelSettings1.setCustomPattern("");
+        panelSettings2.setDelimiter(" ");
+        panelSettings2.setDateFormatSelection(DateFormatSelection.DATE_SHORT);
+        panelSettings2.setCustomPattern("");
+        panelSettings3.setDelimiter("-");
+        panelSettings3.setDateFormatSelection(DateFormatSelection.TIME_SHORT);
+        panelSettings3.setCustomPattern("");
+        persistFormat();
+    }
+
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (!listen) {
+            return;
+        }
+        String propertyName = evt.getPropertyName();
+        boolean changed = "dateFormatSelection".equals(propertyName)
+                || "delimiter".equals(propertyName)
+                || "customPattern".equals(propertyName);
+        if (changed) {
+            showExample();
+        }
+    }
+
+    private void showExample() {
+        Date now = new Date();
+        StringBuilder sb = new StringBuilder();
+        for (DateFormatSettingPanel panel : settingsPanels) {
+            if (panel.getDateFormatSelection() != DateFormatSelection.NONE) {
+                sb.append(panel.getDelimiter());
+                sb.append(format(now, panel));
+            }
+        }
+        labelExample.setText(sb.toString());
+    }
+
+    private String format(Date date, DateFormatSettingPanel panel) {
+        DateFormatSelection dateFormatSelection = panel.getDateFormatSelection();
+        if (dateFormatSelection == DateFormatSelection.NONE) {
+            return "";
+        } else if (dateFormatSelection == DateFormatSelection.CUSTOM_PATTERN) {
+            try {
+                return new SimpleDateFormat(panel.getCustomPattern()).format(date);
+            } catch (Throwable t) {
+                return NbBundle.getMessage(StatusLinePreferencesPanel.class, "StatusLinePreferencesPanel.Error.Format");
+            }
+        } else {
+            return dateFormatSelection.getDateFormat().format(date);
+        }
+    }
+
+    private boolean checkErrorInCustomFormat() {
+        for (DateFormatSettingPanel panel : settingsPanels) {
+            if (panel.getDateFormatSelection() == DateFormatSelection.CUSTOM_PATTERN) {
+                String pattern = panel.getCustomPattern();
+                if (!isValidCustomPattern(pattern)) {
+                    showCustomPatternErrorMessage(pattern);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean isValidCustomPattern(String pattern) {
+        try {
+            SimpleDateFormat df = new SimpleDateFormat(pattern);
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    private void showCustomPatternErrorMessage(String pattern) {
+        String message = NbBundle.getMessage(StatusLinePreferencesPanel.class, "StatusLinePreferencesPanel.Error.CustomPattern", pattern);
+        NotifyDescriptor d = new NotifyDescriptor.Message(message, NotifyDescriptor.ERROR_MESSAGE);
+        DialogDisplayer.getDefault().notify(d);
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The
+     * content of this method is always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
+
+        buttonGroupPatterns = new javax.swing.ButtonGroup();
+        panelSettings = new javax.swing.JPanel();
+        panelSettings1 = new de.elmar_baumann.nb.slclock.DateFormatSettingPanel();
+        panelSettings1.setDelimiter(" ");
+        panelSettings1.setDateFormatSelection(DateFormatSelection.DAY_OF_WEEK_SHORT);
+        panelSettings1.addPropertyChangeListener(this);
+        settingsPanels.add(panelSettings1);
+        panelSettings2 = new de.elmar_baumann.nb.slclock.DateFormatSettingPanel();
+        panelSettings2.setDelimiter(" ");
+        panelSettings2.setDateFormatSelection(DateFormatSelection.DATE_SHORT);
+        panelSettings2.addPropertyChangeListener(this);
+        settingsPanels.add(panelSettings2);
+        panelSettings3 = new de.elmar_baumann.nb.slclock.DateFormatSettingPanel();
+        panelSettings3.setDelimiter("-");
+        panelSettings3.setDateFormatSelection(DateFormatSelection.TIME_SHORT);
+        panelSettings3.addPropertyChangeListener(this);
+        settingsPanels.add(panelSettings3);
+        panelFill = new javax.swing.JPanel();
+        labelInfoCustomPattern = new javax.swing.JLabel();
+        panelExample = new javax.swing.JPanel();
+        labelExample = new javax.swing.JLabel();
+        panelButtons = new javax.swing.JPanel();
+        buttonReset = new javax.swing.JButton();
+        buttonApply = new javax.swing.JButton();
+
+        setLayout(new java.awt.GridBagLayout());
+
+        panelSettings.setLayout(new java.awt.GridBagLayout());
+
+        panelSettings1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        panelSettings.add(panelSettings1, gridBagConstraints);
+
+        panelSettings2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        panelSettings.add(panelSettings2, gridBagConstraints);
+
+        panelSettings3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        panelSettings.add(panelSettings3, gridBagConstraints);
+
+        javax.swing.GroupLayout panelFillLayout = new javax.swing.GroupLayout(panelFill);
+        panelFill.setLayout(panelFillLayout);
+        panelFillLayout.setHorizontalGroup(
+            panelFillLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        panelFillLayout.setVerticalGroup(
+            panelFillLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        panelSettings.add(panelFill, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        add(panelSettings, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        add(labelInfoCustomPattern, gridBagConstraints);
+
+        panelExample.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(StatusLinePreferencesPanel.class, "StatusLinePreferencesPanel.panelExample.border.title"))); // NOI18N
+        panelExample.setLayout(new java.awt.GridBagLayout());
+
+        labelExample.setForeground(new java.awt.Color(0, 0, 255));
+        org.openide.awt.Mnemonics.setLocalizedText(labelExample, " "); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 5);
+        panelExample.add(labelExample, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        add(panelExample, gridBagConstraints);
+
+        panelButtons.setLayout(new java.awt.GridBagLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(buttonReset, org.openide.util.NbBundle.getMessage(StatusLinePreferencesPanel.class, "StatusLinePreferencesPanel.buttonReset.text")); // NOI18N
+        buttonReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonResetActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        panelButtons.add(buttonReset, gridBagConstraints);
+
+        org.openide.awt.Mnemonics.setLocalizedText(buttonApply, org.openide.util.NbBundle.getMessage(StatusLinePreferencesPanel.class, "StatusLinePreferencesPanel.buttonApply.text")); // NOI18N
+        buttonApply.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonApplyActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        panelButtons.add(buttonApply, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 5);
+        add(panelButtons, gridBagConstraints);
+    }//GEN-END:initComponents
+
+    private void buttonApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonApplyActionPerformed
+        persistFormat();
+    }//GEN-LAST:event_buttonApplyActionPerformed
+
+    private void buttonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetActionPerformed
+        reset();
+    }//GEN-LAST:event_buttonResetActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonApply;
+    private javax.swing.ButtonGroup buttonGroupPatterns;
+    private javax.swing.JButton buttonReset;
+    private javax.swing.JLabel labelExample;
+    private javax.swing.JLabel labelInfoCustomPattern;
+    private javax.swing.JPanel panelButtons;
+    private javax.swing.JPanel panelExample;
+    private javax.swing.JPanel panelFill;
+    private javax.swing.JPanel panelSettings;
+    private de.elmar_baumann.nb.slclock.DateFormatSettingPanel panelSettings1;
+    private de.elmar_baumann.nb.slclock.DateFormatSettingPanel panelSettings2;
+    private de.elmar_baumann.nb.slclock.DateFormatSettingPanel panelSettings3;
+    // End of variables declaration//GEN-END:variables
+}

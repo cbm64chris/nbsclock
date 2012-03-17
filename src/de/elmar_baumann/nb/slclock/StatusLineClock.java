@@ -2,9 +2,10 @@ package de.elmar_baumann.nb.slclock;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.text.DateFormat;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
+import java.awt.Frame;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,30 +16,32 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
+import org.openide.windows.WindowManager;
 
 /**
  * Displays date and time in the status line.
+ *
  * @author Elmar Baumann
  */
 @ServiceProvider(service = StatusLineElementProvider.class)
 public final class StatusLineClock implements StatusLineElementProvider {
 
-    private static final String FORMAT_PATTERN = "  {0} {1} - {2}";
-    private static final DateFormat WEEKDAY_FORMAT = new SimpleDateFormat("E");
-    private static final DateFormat DATE_FORMAT = DateFormat.getDateInstance(DateFormat.SHORT);
-    private static final DateFormat TIME_FORMAT = DateFormat.getTimeInstance(DateFormat.SHORT);
     private static final int REFRESH_INTERVAL_MILLISECONDS = 1000;
-    private final JLabel clockLabel = new JLabel(getCurrentDateTimeString());
+    private final JLabel clockLabel;
     private final JPanel statusLinePanel = new JPanel(new BorderLayout());
     private final ScheduledExecutorService scheduler;
 
     public StatusLineClock() {
         scheduler = Executors.newSingleThreadScheduledExecutor(threadFactory);
+        DateFormatArray dateFormatArray = StatusLinePreferences.restoreDateFormatArray();
+        clockLabel = new JLabel(dateFormatArray.format(new Date()));
         initComponents();
-        scheduler.scheduleWithFixedDelay(clockLabelUpdater, 0, REFRESH_INTERVAL_MILLISECONDS, TimeUnit.MILLISECONDS);
+        scheduler.scheduleWithFixedDelay(new ClockLabelUpdater(dateFormatArray), 0, REFRESH_INTERVAL_MILLISECONDS, TimeUnit.MILLISECONDS);
+        clockLabel.addMouseListener(settingsDialogDisplayer);
     }
 
     private void initComponents() {
@@ -51,28 +54,47 @@ public final class StatusLineClock implements StatusLineElementProvider {
         return statusLinePanel;
     }
 
-    private static String getCurrentDateTimeString() {
-        Date now = new Date();
+    private final MouseListener settingsDialogDisplayer = new MouseAdapter() {
 
-        return MessageFormat.format(FORMAT_PATTERN,
-                WEEKDAY_FORMAT.format(now),
-                DATE_FORMAT.format(now),
-                TIME_FORMAT.format(now));
-    }
-    private final Runnable clockLabelUpdater = new Runnable() {
-
-        public void run() {
-            clockLabel.setText(getCurrentDateTimeString());
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                Frame mainWindow = WindowManager.getDefault().getMainWindow();
+                StatusLinePreferencesDialog dialog = new StatusLinePreferencesDialog(mainWindow, true);
+                dialog.setLocationRelativeTo(mainWindow);
+                dialog.setVisible(true);
+            }
         }
     };
+
+    private class ClockLabelUpdater implements Runnable, StatusLinePreferencesListener {
+
+        private DateFormatArray dateFormatArray;
+
+        private ClockLabelUpdater(DateFormatArray dateFormatArray) {
+            this.dateFormatArray = dateFormatArray;
+            listen();
+    }
+
+        private void listen() {
+            StatusLinePreferences.addListener(this);
+        }
+
+        public void run() {
+            Date now = new Date();
+            clockLabel.setText(dateFormatArray.format(now));
+        }
+
+        public void dateFormatChanged(DateFormatArray newFormat) {
+            dateFormatArray = newFormat;
+        }
+    }
     private final ThreadFactory threadFactory = new ThreadFactory() {
 
         @Override
         public Thread newThread(Runnable r) {
             Thread thread = new Thread(r);
-
             thread.setName("StatusLineClock: Displaying Date and Time in the Status Line");
-
             return thread;
         }
     };
