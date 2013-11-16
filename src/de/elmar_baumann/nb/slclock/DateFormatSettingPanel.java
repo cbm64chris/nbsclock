@@ -52,7 +52,7 @@ public class DateFormatSettingPanel extends javax.swing.JPanel {
             textFieldCustomPattern.requestFocusInWindow();
         }
     }
-    
+
     private final DocumentListener customFormatChangedDocumentListener = new DocumentListener() {
 
         public void insertUpdate(DocumentEvent e) {
@@ -100,7 +100,7 @@ public class DateFormatSettingPanel extends javax.swing.JPanel {
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
         add(labelPattern, gridBagConstraints);
 
         comboBoxDelimiter.setModel(new DefaultComboBoxModel(new Object[]{"", "-", ":", ".", " "}));
@@ -124,18 +124,18 @@ public class DateFormatSettingPanel extends javax.swing.JPanel {
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
         add(comboBoxFormat, gridBagConstraints);
 
-        textFieldCustomPattern.setColumns(5);
         textFieldCustomPattern.setEditable(false);
+        textFieldCustomPattern.setColumns(5);
         textFieldCustomPattern.setToolTipText(org.openide.util.NbBundle.getMessage(DateFormatSettingPanel.class, "DateFormatSettingPanel.textFieldCustomPattern.toolTipText")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
         add(textFieldCustomPattern, gridBagConstraints);
     }//GEN-END:initComponents
 

@@ -168,22 +168,22 @@ public class StatusLinePreferencesPanel extends javax.swing.JPanel implements Pr
 
         panelSettings.setLayout(new java.awt.GridBagLayout());
 
-        panelSettings1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        panelSettings1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
         panelSettings.add(panelSettings1, gridBagConstraints);
 
-        panelSettings2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        panelSettings2.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 20, 0, 0);
         panelSettings.add(panelSettings2, gridBagConstraints);
 
-        panelSettings3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        panelSettings3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 20, 0, 0);
         panelSettings.add(panelSettings3, gridBagConstraints);
 
         javax.swing.GroupLayout panelFillLayout = new javax.swing.GroupLayout(panelFill);
