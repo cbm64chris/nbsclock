@@ -1,4 +1,4 @@
-package de.elmar_baumann.nb.slclock;
+package de.elmar_baumann.nb.slclock.clock;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.List;
  */
 final class DateFormatArray {
 
-    private final List<DateFormatAndDelimiter> formatters = new ArrayList<DateFormatAndDelimiter>();
+    private final List<DateFormatAndDelimiter> formatters = new ArrayList<>();
 
     void addDateFormat(DateFormat dateFormat, String delimiter) {
         addDateFormat(new DateFormatAndDelimiter(dateFormat, delimiter));

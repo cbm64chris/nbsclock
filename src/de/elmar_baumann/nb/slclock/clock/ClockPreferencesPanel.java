@@ -1,4 +1,4 @@
-package de.elmar_baumann.nb.slclock;
+package de.elmar_baumann.nb.slclock.clock;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -14,13 +14,13 @@ import org.openide.util.NbBundle;
 /**
  * @author Elmar Baumann
  */
-public class StatusLinePreferencesPanel extends javax.swing.JPanel implements PropertyChangeListener {
+public class ClockPreferencesPanel extends javax.swing.JPanel implements PropertyChangeListener {
 
     private static final long serialVersionUID = 1L;
-    private final List<DateFormatSettingPanel> settingsPanels = new ArrayList<DateFormatSettingPanel>();
+    private final List<DateFormatSettingPanel> settingsPanels = new ArrayList<>();
     private boolean listen;
 
-    public StatusLinePreferencesPanel() {
+    public ClockPreferencesPanel() {
         initComponents();
         postInitComponents();
     }
@@ -34,19 +34,19 @@ public class StatusLinePreferencesPanel extends javax.swing.JPanel implements Pr
 
     private void restoreFormat() {
         for (int i = 0; i < settingsPanels.size(); i++) {
-            StatusLinePreferences.restoreDateFormatSettingsPanel(settingsPanels.get(i), i);
+            ClockPreferences.restoreDateFormatSettingsPanel(settingsPanels.get(i), i);
         }
     }
 
     private void persistFormat() {
         if (checkErrorInCustomFormat()) {
-            StatusLinePreferences.persistDateFormatArray(settingsPanels);
+            ClockPreferences.persistDateFormatArray(settingsPanels);
         }
     }
 
     private void setInfoCustomPattern() {
         labelInfoCustomPattern.setText(
-                NbBundle.getMessage(StatusLinePreferencesPanel.class, "StatusLinePreferencesPanel.InfoCustomPattern",
+                NbBundle.getMessage(ClockPreferencesPanel.class, "ClockPreferencesPanel.InfoCustomPattern",
                 DateFormatSelection.CUSTOM_PATTERN));
     }
 
@@ -63,6 +63,7 @@ public class StatusLinePreferencesPanel extends javax.swing.JPanel implements Pr
         persistFormat();
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (!listen) {
             return;
@@ -96,7 +97,7 @@ public class StatusLinePreferencesPanel extends javax.swing.JPanel implements Pr
             try {
                 return new SimpleDateFormat(panel.getCustomPattern()).format(date);
             } catch (Throwable t) {
-                return NbBundle.getMessage(StatusLinePreferencesPanel.class, "StatusLinePreferencesPanel.Error.Format");
+                return NbBundle.getMessage(ClockPreferencesPanel.class, "ClockPreferencesPanel.Error.Format");
             }
         } else {
             return dateFormatSelection.getDateFormat().format(date);
@@ -126,7 +127,7 @@ public class StatusLinePreferencesPanel extends javax.swing.JPanel implements Pr
     }
 
     private void showCustomPatternErrorMessage(String pattern) {
-        String message = NbBundle.getMessage(StatusLinePreferencesPanel.class, "StatusLinePreferencesPanel.Error.CustomPattern", pattern);
+        String message = NbBundle.getMessage(ClockPreferencesPanel.class, "ClockPreferencesPanel.Error.CustomPattern", pattern);
         NotifyDescriptor d = new NotifyDescriptor.Message(message, NotifyDescriptor.ERROR_MESSAGE);
         DialogDisplayer.getDefault().notify(d);
     }
@@ -141,22 +142,21 @@ public class StatusLinePreferencesPanel extends javax.swing.JPanel implements Pr
 
         buttonGroupPatterns = new javax.swing.ButtonGroup();
         panelSettings = new javax.swing.JPanel();
-        panelSettings1 = new de.elmar_baumann.nb.slclock.DateFormatSettingPanel();
+        panelSettings1 = new de.elmar_baumann.nb.slclock.clock.DateFormatSettingPanel();
         panelSettings1.setDelimiter(" ");
         panelSettings1.setDateFormatSelection(DateFormatSelection.DAY_OF_WEEK_SHORT);
         panelSettings1.addPropertyChangeListener(this);
         settingsPanels.add(panelSettings1);
-        panelSettings2 = new de.elmar_baumann.nb.slclock.DateFormatSettingPanel();
+        panelSettings2 = new de.elmar_baumann.nb.slclock.clock.DateFormatSettingPanel();
         panelSettings2.setDelimiter(" ");
         panelSettings2.setDateFormatSelection(DateFormatSelection.DATE_SHORT);
         panelSettings2.addPropertyChangeListener(this);
         settingsPanels.add(panelSettings2);
-        panelSettings3 = new de.elmar_baumann.nb.slclock.DateFormatSettingPanel();
+        panelSettings3 = new de.elmar_baumann.nb.slclock.clock.DateFormatSettingPanel();
         panelSettings3.setDelimiter("-");
         panelSettings3.setDateFormatSelection(DateFormatSelection.TIME_SHORT);
         panelSettings3.addPropertyChangeListener(this);
         settingsPanels.add(panelSettings3);
-        panelFill = new javax.swing.JPanel();
         labelInfoCustomPattern = new javax.swing.JLabel();
         panelExample = new javax.swing.JPanel();
         labelExample = new javax.swing.JLabel();
@@ -186,38 +186,22 @@ public class StatusLinePreferencesPanel extends javax.swing.JPanel implements Pr
         gridBagConstraints.insets = new java.awt.Insets(10, 20, 0, 0);
         panelSettings.add(panelSettings3, gridBagConstraints);
 
-        javax.swing.GroupLayout panelFillLayout = new javax.swing.GroupLayout(panelFill);
-        panelFill.setLayout(panelFillLayout);
-        panelFillLayout.setHorizontalGroup(
-            panelFillLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        panelFillLayout.setVerticalGroup(
-            panelFillLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        panelSettings.add(panelFill, gridBagConstraints);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         add(panelSettings, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 15, 0, 15);
         add(labelInfoCustomPattern, gridBagConstraints);
 
-        panelExample.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(StatusLinePreferencesPanel.class, "StatusLinePreferencesPanel.panelExample.border.title"))); // NOI18N
+        panelExample.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(ClockPreferencesPanel.class, "ClockPreferencesPanel.panelExample.border.title"))); // NOI18N
         panelExample.setLayout(new java.awt.GridBagLayout());
 
         labelExample.setForeground(new java.awt.Color(0, 0, 255));
@@ -234,12 +218,12 @@ public class StatusLinePreferencesPanel extends javax.swing.JPanel implements Pr
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
         add(panelExample, gridBagConstraints);
 
         panelButtons.setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(buttonReset, org.openide.util.NbBundle.getMessage(StatusLinePreferencesPanel.class, "StatusLinePreferencesPanel.buttonReset.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(buttonReset, org.openide.util.NbBundle.getMessage(ClockPreferencesPanel.class, "ClockPreferencesPanel.buttonReset.text")); // NOI18N
         buttonReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonResetActionPerformed(evt);
@@ -249,7 +233,7 @@ public class StatusLinePreferencesPanel extends javax.swing.JPanel implements Pr
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelButtons.add(buttonReset, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(buttonApply, org.openide.util.NbBundle.getMessage(StatusLinePreferencesPanel.class, "StatusLinePreferencesPanel.buttonApply.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(buttonApply, org.openide.util.NbBundle.getMessage(ClockPreferencesPanel.class, "ClockPreferencesPanel.buttonApply.text")); // NOI18N
         buttonApply.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonApplyActionPerformed(evt);
@@ -265,7 +249,7 @@ public class StatusLinePreferencesPanel extends javax.swing.JPanel implements Pr
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
         add(panelButtons, gridBagConstraints);
     }//GEN-END:initComponents
 
@@ -285,10 +269,9 @@ public class StatusLinePreferencesPanel extends javax.swing.JPanel implements Pr
     private javax.swing.JLabel labelInfoCustomPattern;
     private javax.swing.JPanel panelButtons;
     private javax.swing.JPanel panelExample;
-    private javax.swing.JPanel panelFill;
     private javax.swing.JPanel panelSettings;
-    private de.elmar_baumann.nb.slclock.DateFormatSettingPanel panelSettings1;
-    private de.elmar_baumann.nb.slclock.DateFormatSettingPanel panelSettings2;
-    private de.elmar_baumann.nb.slclock.DateFormatSettingPanel panelSettings3;
+    private de.elmar_baumann.nb.slclock.clock.DateFormatSettingPanel panelSettings1;
+    private de.elmar_baumann.nb.slclock.clock.DateFormatSettingPanel panelSettings2;
+    private de.elmar_baumann.nb.slclock.clock.DateFormatSettingPanel panelSettings3;
     // End of variables declaration//GEN-END:variables
 }

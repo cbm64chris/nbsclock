@@ -1,13 +1,13 @@
-package de.elmar_baumann.nb.slclock;
+package de.elmar_baumann.nb.slclock.alarmclock;
 
 /**
  * @author Elmar Baumann
  */
-public class StatusLinePreferencesDialog extends javax.swing.JDialog {
+public class AlarmClockPreferencesDialog extends javax.swing.JDialog {
 
     private static final long serialVersionUID = 1L;
 
-    public StatusLinePreferencesDialog(java.awt.Frame parent, boolean modal) {
+    public AlarmClockPreferencesDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -20,10 +20,10 @@ public class StatusLinePreferencesDialog extends javax.swing.JDialog {
     @SuppressWarnings("unchecked")
     private void initComponents() {//GEN-BEGIN:initComponents
 
-        panel = new de.elmar_baumann.nb.slclock.StatusLinePreferencesPanel();
+        panelAlarmEvents = new de.elmar_baumann.nb.slclock.alarmclock.AlarmEventsPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle(org.openide.util.NbBundle.getMessage(StatusLinePreferencesDialog.class, "StatusLinePreferencesDialog.title")); // NOI18N
+        setTitle(org.openide.util.NbBundle.getMessage(AlarmClockPreferencesDialog.class, "AlarmClockPreferencesDialog.title")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -31,15 +31,15 @@ public class StatusLinePreferencesDialog extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelAlarmEvents, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(panelAlarmEvents, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -49,8 +49,9 @@ public class StatusLinePreferencesDialog extends javax.swing.JDialog {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                StatusLinePreferencesDialog dialog = new StatusLinePreferencesDialog(new javax.swing.JFrame(), true);
+                AlarmClockPreferencesDialog dialog = new AlarmClockPreferencesDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
                     }
@@ -61,7 +62,7 @@ public class StatusLinePreferencesDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private de.elmar_baumann.nb.slclock.StatusLinePreferencesPanel panel;
+    private de.elmar_baumann.nb.slclock.alarmclock.AlarmEventsPanel panelAlarmEvents;
     // End of variables declaration//GEN-END:variables
 
 }

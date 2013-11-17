@@ -1,4 +1,4 @@
-package de.elmar_baumann.nb.slclock;
+package de.elmar_baumann.nb.slclock.clock;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.event.DocumentEvent;
@@ -55,14 +55,17 @@ public class DateFormatSettingPanel extends javax.swing.JPanel {
 
     private final DocumentListener customFormatChangedDocumentListener = new DocumentListener() {
 
+        @Override
         public void insertUpdate(DocumentEvent e) {
             fireCustomPatternChanged();
         }
 
+        @Override
         public void removeUpdate(DocumentEvent e) {
             fireCustomPatternChanged();
         }
 
+        @Override
         public void changedUpdate(DocumentEvent e) {
             fireCustomPatternChanged();
         }
@@ -82,8 +85,8 @@ public class DateFormatSettingPanel extends javax.swing.JPanel {
 
         labelDelimiter = new javax.swing.JLabel();
         labelPattern = new javax.swing.JLabel();
-        comboBoxDelimiter = new javax.swing.JComboBox();
-        comboBoxFormat = new javax.swing.JComboBox();
+        comboBoxDelimiter = new javax.swing.JComboBox<>();
+        comboBoxFormat = new javax.swing.JComboBox<>();
         textFieldCustomPattern = new javax.swing.JTextField();
 
         setLayout(new java.awt.GridBagLayout());
@@ -103,7 +106,7 @@ public class DateFormatSettingPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
         add(labelPattern, gridBagConstraints);
 
-        comboBoxDelimiter.setModel(new DefaultComboBoxModel(new Object[]{"", "-", ":", ".", " "}));
+        comboBoxDelimiter.setModel(new DefaultComboBoxModel<>(new String[]{"", "-", ":", ".", " "}));
         comboBoxDelimiter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboBoxDelimiterActionPerformed(evt);
@@ -114,7 +117,7 @@ public class DateFormatSettingPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         add(comboBoxDelimiter, gridBagConstraints);
 
-        comboBoxFormat.setModel(new DefaultComboBoxModel(DateFormatSelection.values()));
+        comboBoxFormat.setModel(new DefaultComboBoxModel<>(DateFormatSelection.values()));
         comboBoxFormat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboBoxFormatActionPerformed(evt);
@@ -148,8 +151,8 @@ public class DateFormatSettingPanel extends javax.swing.JPanel {
         firePropertyChange("delimiter", null, getDelimiter());
     }//GEN-LAST:event_comboBoxDelimiterActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox comboBoxDelimiter;
-    private javax.swing.JComboBox comboBoxFormat;
+    private javax.swing.JComboBox<String> comboBoxDelimiter;
+    private javax.swing.JComboBox<DateFormatSelection> comboBoxFormat;
     private javax.swing.JLabel labelDelimiter;
     private javax.swing.JLabel labelPattern;
     private javax.swing.JTextField textFieldCustomPattern;

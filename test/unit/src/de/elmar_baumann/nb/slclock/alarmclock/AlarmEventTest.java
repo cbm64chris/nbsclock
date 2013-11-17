@@ -103,7 +103,7 @@ public class AlarmEventTest {
         result = event.createAlarmDateNextTo(createDate(2013, 11, 31, 6, 55));
         assertTrue(equals(createDate(2014, 0, 1, 5, 55), result)); // 2014-01-01 == Wednesday
         result = event.createAlarmDateNextTo(createDate(2014, 0, 1, 6, 55));
-        assertTrue(equals(createDate(2014, 0, 4, 5, 55), result)); // 2014-04-07 == Saturday
+        assertTrue(equals(createDate(2014, 0, 4, 5, 55), result)); // 2014-01-04 == Saturday
     }
 
     private boolean equals(Date d1, Date d2) {

@@ -1,4 +1,4 @@
-package de.elmar_baumann.nb.slclock;
+package de.elmar_baumann.nb.slclock.clock;
 
 final class ClockOptionsPanel extends javax.swing.JPanel {
     private static final long serialVersionUID = 1L;
@@ -17,7 +17,7 @@ final class ClockOptionsPanel extends javax.swing.JPanel {
      */
     private void initComponents() {//GEN-BEGIN:initComponents
 
-        statusLinePreferencesPanel1 = new de.elmar_baumann.nb.slclock.StatusLinePreferencesPanel();
+        panelClockPreferences = new de.elmar_baumann.nb.slclock.clock.ClockPreferencesPanel();
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -25,14 +25,14 @@ final class ClockOptionsPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(statusLinePreferencesPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelClockPreferences, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(statusLinePreferencesPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(panelClockPreferences, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(13, Short.MAX_VALUE))
         );
     }//GEN-END:initComponents
@@ -62,6 +62,6 @@ final class ClockOptionsPanel extends javax.swing.JPanel {
         return true;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private de.elmar_baumann.nb.slclock.StatusLinePreferencesPanel statusLinePreferencesPanel1;
+    private de.elmar_baumann.nb.slclock.clock.ClockPreferencesPanel panelClockPreferences;
     // End of variables declaration//GEN-END:variables
 }

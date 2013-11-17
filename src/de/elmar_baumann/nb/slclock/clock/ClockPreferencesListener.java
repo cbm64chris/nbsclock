@@ -1,9 +1,9 @@
-package de.elmar_baumann.nb.slclock;
+package de.elmar_baumann.nb.slclock.clock;
 
 /**
  * @author Elmar Baumann
  */
-interface StatusLinePreferencesListener {
+interface ClockPreferencesListener {
 
     void dateFormatChanged(DateFormatArray newFormat);
 }

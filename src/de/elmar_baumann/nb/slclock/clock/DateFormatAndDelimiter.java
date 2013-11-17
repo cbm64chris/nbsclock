@@ -1,4 +1,4 @@
-package de.elmar_baumann.nb.slclock;
+package de.elmar_baumann.nb.slclock.clock;
 
 import java.text.DateFormat;
 

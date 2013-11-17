@@ -1,4 +1,4 @@
-package de.elmar_baumann.nb.slclock;
+package de.elmar_baumann.nb.slclock.clock;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -14,14 +14,14 @@ import org.openide.util.NbPreferences;
 /**
  * @author Elmar Baumann
  */
-final class StatusLinePreferences {
+public final class ClockPreferences {
 
     private static final int COUNT_LIMIT = 25;
     private static final String KEY_DATE_FORMAT_COUNT = "StatusLinePreferences.DateFormat.Count";
     private static final String KEY_DATE_FORMAT_SELECTION_PREFIX = "StatusLinePreferences.DateFormatSelection.";
     private static final String KEY_DATE_FORMAT_PATTERN_PREFIX = "StatusLinePreferences.DateFormatPattern.";
     private static final String KEY_DATE_FORMAT_DELIMITER_PREFIX = "StatusLinePreferences.FormatDelimiter.";
-    private static final Set<StatusLinePreferencesListener> LISTENERS = new CopyOnWriteArraySet<StatusLinePreferencesListener>();
+    private static final Set<ClockPreferencesListener> LISTENERS = new CopyOnWriteArraySet<>();
 
     static DateFormatArray restoreDateFormatArray() {
         if (!isFormatPersisted()) {
@@ -29,14 +29,12 @@ final class StatusLinePreferences {
         }
         try {
             DateFormatArray array = new DateFormatArray();
-            Preferences prefs = NbPreferences.forModule(StatusLinePreferences.class);
+            Preferences prefs = NbPreferences.forModule(ClockPreferences.class);
             int count = prefs.getInt(KEY_DATE_FORMAT_COUNT, 0);
             for (int i = 0; i < count; i++) {
                 String delimiter = prefs.get(KEY_DATE_FORMAT_DELIMITER_PREFIX + i, "");
                 DateFormatSelection dateFormatSelection = DateFormatSelection.valueOf(prefs.get(KEY_DATE_FORMAT_SELECTION_PREFIX + i, DateFormatSelection.NONE.name()));
-                if (dateFormatSelection == DateFormatSelection.NONE) {
-                    continue;
-                } else if (dateFormatSelection == DateFormatSelection.CUSTOM_PATTERN) {
+                if (dateFormatSelection == DateFormatSelection.CUSTOM_PATTERN) {
                     String pattern = prefs.get(KEY_DATE_FORMAT_PATTERN_PREFIX + i, "");
                     array.addDateFormat(new SimpleDateFormat(pattern), delimiter);
                 } else {
@@ -46,13 +44,13 @@ final class StatusLinePreferences {
             return array;
 
         } catch (Throwable t) {
-            Logger.getLogger(StatusLinePreferences.class.getName()).log(Level.SEVERE, null, t);
+            Logger.getLogger(ClockPreferences.class.getName()).log(Level.SEVERE, null, t);
             return createDefaultDateFormatArray();
         }
     }
 
     static private boolean isFormatPersisted() {
-        Preferences prefs = NbPreferences.forModule(StatusLinePreferences.class);
+        Preferences prefs = NbPreferences.forModule(ClockPreferences.class);
         int count = prefs.getInt(KEY_DATE_FORMAT_COUNT, 0);
         return count > 0;
     }
@@ -69,7 +67,7 @@ final class StatusLinePreferences {
         if (!isFormatPersisted()) {
             return;
         }
-        Preferences prefs = NbPreferences.forModule(StatusLinePreferences.class);
+        Preferences prefs = NbPreferences.forModule(ClockPreferences.class);
         String dateFormatSelectionName = prefs.get(KEY_DATE_FORMAT_SELECTION_PREFIX + index, null);
         if (dateFormatSelectionName == null) {
             panel.setDateFormatSelection(DateFormatSelection.NONE);
@@ -83,13 +81,13 @@ final class StatusLinePreferences {
             panel.setDelimiter(prefs.get(KEY_DATE_FORMAT_DELIMITER_PREFIX + index, ""));
             panel.setCustomPattern(prefs.get(KEY_DATE_FORMAT_PATTERN_PREFIX + index, ""));
         } catch (Throwable t) {
-            Logger.getLogger(StatusLinePreferences.class.getName()).log(Level.SEVERE, null, t);
+            Logger.getLogger(ClockPreferences.class.getName()).log(Level.SEVERE, null, t);
         }
     }
 
     static void persistDateFormatArray(List<DateFormatSettingPanel> panels) {
         clear();
-        Preferences prefs = NbPreferences.forModule(StatusLinePreferences.class);
+        Preferences prefs = NbPreferences.forModule(ClockPreferences.class);
         int count = panels.size();
         prefs.putInt(KEY_DATE_FORMAT_COUNT, count);
         for (int i = 0; i < count; i++) {
@@ -102,7 +100,7 @@ final class StatusLinePreferences {
     }
 
     static private void clear() {
-        Preferences prefs = NbPreferences.forModule(StatusLinePreferences.class);
+        Preferences prefs = NbPreferences.forModule(ClockPreferences.class);
         prefs.remove(KEY_DATE_FORMAT_COUNT);
         for (int i = 0; i < COUNT_LIMIT; i++) {
             prefs.remove(KEY_DATE_FORMAT_DELIMITER_PREFIX + i);
@@ -110,20 +108,20 @@ final class StatusLinePreferences {
         }
     }
 
-    static void addListener(StatusLinePreferencesListener listener) {
+    static void addListener(ClockPreferencesListener listener) {
         LISTENERS.add(listener);
     }
 
-    static void removeListener(StatusLinePreferencesListener listener) {
+    static void removeListener(ClockPreferencesListener listener) {
         LISTENERS.remove(listener);
     }
 
     private static void notifyDateFormatChanged(DateFormatArray dateFormatArray) {
-        for (StatusLinePreferencesListener listener : LISTENERS) {
+        for (ClockPreferencesListener listener : LISTENERS) {
             listener.dateFormatChanged(dateFormatArray);
         }
     }
 
-    private StatusLinePreferences() {
+    private ClockPreferences() {
     }
 }

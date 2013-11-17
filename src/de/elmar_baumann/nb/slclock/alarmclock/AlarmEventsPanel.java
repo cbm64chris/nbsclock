@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.elmar_baumann.nb.slclock.alarmclock;
 
 /**
@@ -23,59 +18,66 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
      */
     @SuppressWarnings("unchecked")
     private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
 
-        buttonAddAlarmEvent = new javax.swing.JButton();
-        buttonRemoveSelAlarmEvents = new javax.swing.JButton();
         scrollPaneAlarmEvents = new javax.swing.JScrollPane();
         panelAlarmEvents = new javax.swing.JPanel();
+        panelButtons = new javax.swing.JPanel();
+        buttonAddAlarmEvent = new javax.swing.JButton();
+        buttonRemoveSelAlarmEvents = new javax.swing.JButton();
 
-        buttonAddAlarmEvent.setText("+"); // NOI18N
-        buttonAddAlarmEvent.setToolTipText(org.openide.util.NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.buttonAddAlarmEvent.toolTipText")); // NOI18N
-        buttonAddAlarmEvent.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        setLayout(new java.awt.GridBagLayout());
 
-        buttonRemoveSelAlarmEvents.setText("-"); // NOI18N
-        buttonRemoveSelAlarmEvents.setToolTipText(org.openide.util.NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.buttonRemoveSelAlarmEvents.toolTipText")); // NOI18N
-        buttonRemoveSelAlarmEvents.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        scrollPaneAlarmEvents.setPreferredSize(new java.awt.Dimension(250, 150));
+
+        panelAlarmEvents.setPreferredSize(new java.awt.Dimension(100, 100));
 
         javax.swing.GroupLayout panelAlarmEventsLayout = new javax.swing.GroupLayout(panelAlarmEvents);
         panelAlarmEvents.setLayout(panelAlarmEventsLayout);
         panelAlarmEventsLayout.setHorizontalGroup(
             panelAlarmEventsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 219, Short.MAX_VALUE)
+            .addGap(0, 266, Short.MAX_VALUE)
         );
         panelAlarmEventsLayout.setVerticalGroup(
             panelAlarmEventsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 136, Short.MAX_VALUE)
+            .addGap(0, 149, Short.MAX_VALUE)
         );
 
         scrollPaneAlarmEvents.setViewportView(panelAlarmEvents);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(scrollPaneAlarmEvents, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(buttonAddAlarmEvent, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(buttonRemoveSelAlarmEvents, javax.swing.GroupLayout.Alignment.TRAILING)))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        add(scrollPaneAlarmEvents, gridBagConstraints);
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {buttonAddAlarmEvent, buttonRemoveSelAlarmEvents});
+        panelButtons.setLayout(new java.awt.GridBagLayout());
 
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(buttonAddAlarmEvent)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonRemoveSelAlarmEvents)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(scrollPaneAlarmEvents, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
-        );
+        buttonAddAlarmEvent.setText("+"); // NOI18N
+        buttonAddAlarmEvent.setToolTipText(org.openide.util.NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.buttonAddAlarmEvent.toolTipText")); // NOI18N
+        buttonAddAlarmEvent.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        panelButtons.add(buttonAddAlarmEvent, gridBagConstraints);
 
-        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {buttonAddAlarmEvent, buttonRemoveSelAlarmEvents});
+        buttonRemoveSelAlarmEvents.setText("-"); // NOI18N
+        buttonRemoveSelAlarmEvents.setToolTipText(org.openide.util.NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.buttonRemoveSelAlarmEvents.toolTipText")); // NOI18N
+        buttonRemoveSelAlarmEvents.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
+        panelButtons.add(buttonRemoveSelAlarmEvents, gridBagConstraints);
 
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 10);
+        add(panelButtons, gridBagConstraints);
     }//GEN-END:initComponents
 
 
@@ -83,6 +85,7 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
     private javax.swing.JButton buttonAddAlarmEvent;
     private javax.swing.JButton buttonRemoveSelAlarmEvents;
     private javax.swing.JPanel panelAlarmEvents;
+    private javax.swing.JPanel panelButtons;
     private javax.swing.JScrollPane scrollPaneAlarmEvents;
     // End of variables declaration//GEN-END:variables
 
