@@ -1,7 +1,6 @@
 package de.elmar_baumann.nb.slclock;
 
 import java.awt.Component;
-
 import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -13,13 +12,13 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = StatusLineElementProvider.class)
 public final class StatusLineClock implements StatusLineElementProvider {
 
-    private StatusLinePanel panelStatusLine;
+    private StatusLineClockPanel panel;
 
     @Override
     public Component getStatusLineElement() {
-        if (panelStatusLine == null) {
-            panelStatusLine = new StatusLinePanel();
+        if (panel == null) {
+            panel = new StatusLineClockPanel();
         }
-        return panelStatusLine;
+        return panel;
     }
 }

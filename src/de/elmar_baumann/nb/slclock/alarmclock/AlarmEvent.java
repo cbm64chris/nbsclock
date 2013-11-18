@@ -7,66 +7,137 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import org.netbeans.api.annotations.common.NullAllowed;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Elmar Baumann
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public final class AlarmEvent {
 
-    private final int hour;
-    private final int minute;
-    private final Collection<DayOfWeek> daysOfWeek;
+    private int hour;
+    private int minute;
+    private Collection<DayOfWeek> daysOfWeek = new ArrayList<>();
     private String displayName;
     private boolean run;
+    private boolean sound;
 
-    public AlarmEvent(int hour, int minute, DayOfWeek... daysOfWeek) {
-        if (hour < 0 || hour > 24) {
-            throw new IllegalArgumentException("Invalid hour (allowed range 0 .. 24): " + hour);
-        }
-        if (minute < 0 || minute > 59) {
-            throw new IllegalArgumentException("Invalid minute (allowed range 0 .. 59): " + minute);
-        }
-        this.hour = hour;
-        this.minute = minute;
-        this.daysOfWeek = daysOfWeek == null || daysOfWeek.length == 0
-                ? EnumSet.noneOf(DayOfWeek.class)
-                : EnumSet.copyOf(Arrays.asList(daysOfWeek));
+    public AlarmEvent() {
+        this(0, 0);
     }
 
-    public int getHour() {
+    public AlarmEvent(int hour, int minute, DayOfWeek... daysOfWeek) {
+        setHour(hour);
+        setMinute(minute);
+        setDaysOfWeek(Arrays.asList(daysOfWeek));
+    }
+
+    public AlarmEvent(AlarmEvent other) {
+        this.hour = other.hour;
+        this.minute = other.minute;
+        this.daysOfWeek = new ArrayList<>(other.daysOfWeek);
+        this.displayName = other.displayName;
+        this.run = other.run;
+        this.sound = other.sound;
+    }
+
+    @XmlElement(name = "hour")
+    public synchronized int getHour() {
         return hour;
     }
 
-    public int getMinute() {
+    public synchronized void setHour(int hour) {
+        if (hour < 0 || hour > 24) {
+            throw new IllegalArgumentException("Invalid hour (allowed range 0 .. 24): " + hour);
+        }
+        this.hour = hour;
+    }
+
+    @XmlElement(name = "minute")
+    public synchronized int getMinute() {
         return minute;
     }
 
-    public Collection<DayOfWeek> getDaysOfWeek() {
-        return Collections.unmodifiableCollection(daysOfWeek);
+    public synchronized void setMinute(int minute) {
+        if (minute < 0 || minute > 59) {
+            throw new IllegalArgumentException("Invalid minute (allowed range 0 .. 59): " + minute);
+        }
+        this.minute = minute;
     }
 
-    public boolean isRun() {
+    @XmlElement(name = "dayofweek")
+    public synchronized Collection<DayOfWeek> getDaysOfWeek() {
+        return daysOfWeek; // JAXB: modifiable
+    }
+
+    public synchronized void setDaysOfWeek(Collection<DayOfWeek> daysOfWeek) {
+        if (daysOfWeek == null) {
+            throw new NullPointerException("daysOfWeek == null");
+    }
+        this.daysOfWeek = new ArrayList<>(daysOfWeek);
+    }
+
+    public synchronized boolean isRepeatable() {
+        return !daysOfWeek.isEmpty();
+    }
+
+    public synchronized boolean isAlarm(long timeInMillis) {
+        if (!run) {
+            return false;
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(timeInMillis);
+        int calHour = cal.get(Calendar.HOUR_OF_DAY);
+        int calMinute = cal.get(Calendar.MINUTE);
+        final boolean hourAnMinuteEquals = hour == calHour && minute == calMinute;
+        return isRepeatable()
+                ? hourAnMinuteEquals && containsDayOfWeek(timeInMillis)
+                : hourAnMinuteEquals;
+    }
+
+    private synchronized boolean containsDayOfWeek(long timeInMillis) {
+        for (DayOfWeek dayOfWeek : daysOfWeek) {
+            if (dayOfWeek.isDayOfWeek(timeInMillis)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @XmlElement(name = "run")
+    public synchronized boolean isRun() {
         return run;
     }
 
-    public void setRun(boolean run) {
+    public synchronized void setRun(boolean run) {
         this.run = run;
     }
 
-    public void setDisplayName(@NullAllowed String displayName) {
+    @XmlElement(name = "sound")
+    public synchronized boolean isSound() {
+        return sound;
+    }
+
+    public void setSound(boolean sound) {
+        this.sound = sound;
+    }
+
+    public synchronized void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
-    public String getDisplayName() {
-        if (displayName != null && !displayName.trim().isEmpty()) {
+    @XmlElement(name = "displayname")
+    public synchronized String getDisplayName() {
             return displayName;
         }
+
+    public synchronized String getTimeForGui() {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, hour);
         cal.set(Calendar.MINUTE, minute);
@@ -76,29 +147,40 @@ public final class AlarmEvent {
         Collections.sort(sortedDaysOfWeek, new DayOfWeek.CalendarDayOfWeekCmpAsc());
         boolean first = true;
         for (DayOfWeek dayOfWeek : sortedDaysOfWeek) {
-            sb.append(first ? " " : ", ")
-              .append(dayOfWeek.getGuiString());
+            sb.append(first ? " " : " ")
+              .append(dayOfWeek.getShortGuiString());
             first = false;
         }
         return sb.toString();
     }
 
     @Override
-    public String toString() {
-        return getDisplayName();
+    public synchronized String toString() {
+        String dn = getDisplayName();
+        return getTimeForGui() + dn == null
+                ? ""
+                : dn;
     }
 
     @Override
-    public int hashCode() {
+    public synchronized int hashCode() {
         int hash = 3;
         hash = 83 * hash + this.hour;
         hash = 83 * hash + this.minute;
-        hash = 83 * hash + Objects.hashCode(this.daysOfWeek);
+        hash = 83 * hash + daysOfWeekHashCode();
+        return hash;
+    }
+
+    private synchronized int daysOfWeekHashCode() {
+        int hash = 3;
+        for (DayOfWeek dayOfWeek : daysOfWeek) {
+            hash += dayOfWeek.hashCode();
+        }
         return hash;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public synchronized boolean equals(Object obj) {
         if (obj == this) {
             return true;
         }
@@ -110,125 +192,6 @@ public final class AlarmEvent {
                 && minute == other.minute
                 && daysOfWeek.size() == other.daysOfWeek.size()
                 && daysOfWeek.containsAll(other.daysOfWeek);
-    }
-
-    /**
-     * May throw Exceptions!
-     * @param date
-     * @return
-     */
-    public Date createAlarmDateNextTo(Date date) {
-        if (date == null) {
-            throw new NullPointerException("date == null");
-        }
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int dateHour = cal.get(Calendar.HOUR_OF_DAY);
-        int dateMinute = cal.get(Calendar.MINUTE);
-        DayOfWeek dateDayOfWeek = DayOfWeek.parseDate(date);
-        boolean hmEqLater = hour >= dateHour || hour == dateHour && minute >= dateMinute;
-        boolean isAtSameDay = daysOfWeek.isEmpty() && hmEqLater ||
-                daysOfWeek.contains(dateDayOfWeek) && hmEqLater;
-        if (isAtSameDay) {
-            setTime(cal);
-            return cal.getTime();
-        }
-        boolean isNextDay = daysOfWeek.isEmpty()  && !hmEqLater; // next day with content within daysOfWeek is treated below
-        if (isNextDay) {
-            setTime(cal);
-            cal.add(Calendar.DAY_OF_WEEK, 1);
-            return cal.getTime();
-        }
-        boolean isNextWeek = daysOfWeek.size() == 1 && daysOfWeek.contains(dateDayOfWeek);
-        if (isNextWeek) {
-            setTime(cal);
-            cal.add(Calendar.DAY_OF_WEEK, 7);
-            return cal.getTime();
-        }
-        int calDateDayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-        List<DayOfWeek> sortedDaysOfWeek = new LinkedList<>(Arrays.asList(DayOfWeek.values()));
-        Collections.sort(sortedDaysOfWeek, new DayOfWeek.CalendarDayOfWeekCmpAsc());
-        for (DayOfWeek dayOfWeek : sortedDaysOfWeek) {
-            if (daysOfWeek.contains(dayOfWeek) && dayOfWeek.getForCalendar() > calDateDayOfWeek) {
-                setTime(cal);
-                cal.add(Calendar.DAY_OF_WEEK, dayOfWeek.getForCalendar() - calDateDayOfWeek);
-                return cal.getTime();
-            }
-        }
-        throw new IllegalStateException("Date not calculated for: " + date);
-    }
-
-    private void setTime(Calendar cal) {
-        cal.set(Calendar.HOUR_OF_DAY, hour);
-        cal.set(Calendar.MINUTE, minute);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-    }
-
-    /**
-     * May throw exceptions!
-     * @param s
-     * @return
-     */
-    public static Collection<AlarmEvent> fromPersistentString(@NullAllowed String s) {
-        if (s == null || s.trim().isEmpty()) {
-            return Collections.emptyList();
-        }
-        String[] eventTokens = s.split(";");
-        Collection<AlarmEvent> events = new ArrayList<>(eventTokens.length);
-        for (String eventToken : eventTokens) {
-            String[] timeRunDaysOfWeekTokens = eventToken.split(" ");
-            String[] timeTokens = timeRunDaysOfWeekTokens[0].split(":");
-            int hours = Integer.valueOf(timeTokens[0]);
-            int minutes = Integer.valueOf(timeTokens[1]);
-            String runToken = timeRunDaysOfWeekTokens[1];
-            boolean run = "true".equals(runToken);
-            Collection<DayOfWeek> daysOfWeek = EnumSet.noneOf(DayOfWeek.class);
-            if (timeRunDaysOfWeekTokens.length == 3) {
-                for (String dowToken : timeRunDaysOfWeekTokens[2].split(",")) {
-                    daysOfWeek.add(DayOfWeek.valueOf(dowToken));
-                }
-            }
-            AlarmEvent alarmEvent = new AlarmEvent(hours, minutes, daysOfWeek.toArray(new DayOfWeek[daysOfWeek.size()]));
-            alarmEvent.setRun(run);
-            events.add(alarmEvent);
-        }
-        return events;
-    }
-
-    /**
-     * @param events
-     * @return "hour:minute run dayOfWeek1,dayOfWeek2,...;hour:minute run dayOfWeek1,dayOfWeek2,...;..."
-     */
-    public static String toPersistentString(Collection<AlarmEvent> events) {
-        if (events == null) {
-            throw new NullPointerException("events == null");
-        }
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        for (AlarmEvent event : events) {
-            sb.append(first ? "" : ";")
-              .append(event.toPersistentString());
-            first = false;
-        }
-        return sb.toString();
-    }
-
-    // "hour:minute run dayOfWeek1,dayOfWeek2,..."
-    private String toPersistentString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.valueOf(hour))
-          .append(":")
-          .append(String.valueOf(minute))
-          .append(" ")
-          .append(run ? "true" : "false");
-        boolean first = true;
-        for (DayOfWeek dayOfWeek : daysOfWeek) {
-            sb.append(first ? " " : ",")
-              .append(dayOfWeek.name());
-            first = false;
-        }
-        return sb.toString();
     }
 
     /**

@@ -1,7 +1,6 @@
 package de.elmar_baumann.nb.slclock.clock;
 
 import de.elmar_baumann.nb.slclock.util.NamedThreadFactory;
-import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -13,9 +12,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
-import org.openide.windows.WindowManager;
 
 /**
  * Displays date and time in the status line.

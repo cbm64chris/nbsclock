@@ -1,15 +1,99 @@
 package de.elmar_baumann.nb.slclock.alarmclock;
 
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JPanel;
+import org.openide.DialogDescriptor;
+import org.openide.DialogDisplayer;
+import org.openide.util.NbBundle;
+
 /**
  * @author Elmar Baumann
  */
 public class AlarmEventsPanel extends javax.swing.JPanel {
 
     private static final long serialVersionUID = 1L;
+    private final AlarmEventsModel model;
 
-    public AlarmEventsPanel() {
+    public AlarmEventsPanel(AlarmEventsModel model) {
+        if (model == null) {
+            throw new NullPointerException("model == null");
+        }
+        this.model = model;
         initComponents();
+        model.addPropertyChangeListener(modelChangeListener);
+        addEvents();
     }
+
+    private void addEvents() {
+        panelEvents.removeAll();
+        List<AlarmEvent> events = new ArrayList<>(model.getEvents());
+        Collections.sort(events, new AlarmEvent.AlarmEventCmpAsc());
+        for (AlarmEvent event : events) {
+            addEvent(event);
+        }
+        addVerticalFillPanel();
+        invalidate();
+        validate();
+        repaint();
+    }
+
+    private void addEvent(AlarmEvent event) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(5, 5, 0, 5);
+        panelEvents.add(new AlarmEventPanel(event, model), gbc);
+    }
+
+    private void addVerticalFillPanel() {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        panelEvents.add(new JPanel(), gbc);
+    }
+
+    private final Action addAction = new AbstractAction() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            AlarmEventEditPanel alarmEventsEditPanel = new AlarmEventEditPanel();
+                DialogDescriptor dd = new DialogDescriptor(
+                       alarmEventsEditPanel, // innerPane
+                        NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.AddAction.Title"), // title
+                        true, // modal
+                        new Object[] {DialogDescriptor.OK_OPTION, DialogDescriptor.CANCEL_OPTION}, //options
+                        DialogDescriptor.OK_OPTION, // initialValue
+                        DialogDescriptor.DEFAULT_ALIGN, // optionsAlign
+                        null, // helpCtx
+                        null //bl
+                );
+            if (DialogDisplayer.getDefault().notify(dd) == DialogDescriptor.OK_OPTION) {
+                AlarmEvent event = alarmEventsEditPanel.save();
+                event.setRun(true);
+                model.addToEvents(event);
+            }
+        }
+    };
+
+    private final PropertyChangeListener modelChangeListener = new PropertyChangeListener() {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (AlarmEventsModel.PROPERTY_EVENTS.equals(evt.getPropertyName())) {
+                addEvents();
+            }
+        }
+    };
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -21,29 +105,17 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         scrollPaneAlarmEvents = new javax.swing.JScrollPane();
-        panelAlarmEvents = new javax.swing.JPanel();
+        panelEvents = new javax.swing.JPanel();
         panelButtons = new javax.swing.JPanel();
-        buttonAddAlarmEvent = new javax.swing.JButton();
-        buttonRemoveSelAlarmEvents = new javax.swing.JButton();
+        buttonAdd = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
 
-        scrollPaneAlarmEvents.setPreferredSize(new java.awt.Dimension(250, 150));
+        scrollPaneAlarmEvents.setPreferredSize(new java.awt.Dimension(600, 300));
 
-        panelAlarmEvents.setPreferredSize(new java.awt.Dimension(100, 100));
-
-        javax.swing.GroupLayout panelAlarmEventsLayout = new javax.swing.GroupLayout(panelAlarmEvents);
-        panelAlarmEvents.setLayout(panelAlarmEventsLayout);
-        panelAlarmEventsLayout.setHorizontalGroup(
-            panelAlarmEventsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 266, Short.MAX_VALUE)
-        );
-        panelAlarmEventsLayout.setVerticalGroup(
-            panelAlarmEventsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 149, Short.MAX_VALUE)
-        );
-
-        scrollPaneAlarmEvents.setViewportView(panelAlarmEvents);
+        panelEvents.setPreferredSize(new java.awt.Dimension(300, 200));
+        panelEvents.setLayout(new java.awt.GridBagLayout());
+        scrollPaneAlarmEvents.setViewportView(panelEvents);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -55,22 +127,12 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
 
         panelButtons.setLayout(new java.awt.GridBagLayout());
 
-        buttonAddAlarmEvent.setText("+"); // NOI18N
-        buttonAddAlarmEvent.setToolTipText(org.openide.util.NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.buttonAddAlarmEvent.toolTipText")); // NOI18N
-        buttonAddAlarmEvent.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        buttonAdd.setAction(addAction);
+        org.openide.awt.Mnemonics.setLocalizedText(buttonAdd, org.openide.util.NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.buttonAdd.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        panelButtons.add(buttonAddAlarmEvent, gridBagConstraints);
-
-        buttonRemoveSelAlarmEvents.setText("-"); // NOI18N
-        buttonRemoveSelAlarmEvents.setToolTipText(org.openide.util.NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.buttonRemoveSelAlarmEvents.toolTipText")); // NOI18N
-        buttonRemoveSelAlarmEvents.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
-        panelButtons.add(buttonRemoveSelAlarmEvents, gridBagConstraints);
+        panelButtons.add(buttonAdd, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -82,10 +144,9 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonAddAlarmEvent;
-    private javax.swing.JButton buttonRemoveSelAlarmEvents;
-    private javax.swing.JPanel panelAlarmEvents;
+    private javax.swing.JButton buttonAdd;
     private javax.swing.JPanel panelButtons;
+    private javax.swing.JPanel panelEvents;
     private javax.swing.JScrollPane scrollPaneAlarmEvents;
     // End of variables declaration//GEN-END:variables
 

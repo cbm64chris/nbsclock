@@ -2,7 +2,6 @@ package de.elmar_baumann.nb.slclock.clock;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
 import org.openide.util.NbBundle;
 
 /**
