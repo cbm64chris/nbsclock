@@ -21,6 +21,7 @@ public class AlarmEventsRepositoryTest {
         AlarmEvent evt2 = new AlarmEvent(8, 33, DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY);
         evt2.setSound(true);
         evt2.setRun(true);
+        evt2.setVerbose(true);
         events = new AlarmEvents(Arrays.asList(evt1));
         repository.save(events);
         loadedEvents = repository.load().getEvents();
@@ -40,6 +41,7 @@ public class AlarmEventsRepositoryTest {
         Assert.assertEquals(evt1, e);
         Assert.assertFalse(e.isRun());
         Assert.assertFalse(e.isSound());
+        Assert.assertFalse(e.isVerbose());
     }
 
     private AlarmEvent find(Collection<AlarmEvent> events, AlarmEvent event) {

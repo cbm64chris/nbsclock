@@ -18,8 +18,8 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="labelAlarmClock">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="ICON_PAUSES" type="code"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/de/elmar_baumann/nb/slclock/icons/alarm-pauses.png"/>
         </Property>
         <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="de/elmar_baumann/nb/slclock/alarmclock/Bundle.properties" key="AlarmClockPanel.labelAlarmClock.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>

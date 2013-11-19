@@ -7,6 +7,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
+import org.netbeans.api.annotations.common.StaticResource;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.util.ImageUtilities;
@@ -18,32 +19,36 @@ import org.openide.util.NbBundle;
 public class AlarmClockPanel extends javax.swing.JPanel {
 
     private static final long serialVersionUID = 1L;
-    private static final Icon ICON_RUNS = ImageUtilities.loadImageIcon("/de/elmar_baumann/nb/slclock/icons/alarm-runs.png", false);
-    private static final Icon ICON_PAUSES = ImageUtilities.loadImageIcon("/de/elmar_baumann/nb/slclock/icons/alarm-pauses.png", false);
-    private final AlarmEventsModel model = new AlarmEventsModel();
+    @StaticResource private static final String ICON_PATH_RUNS = "de/elmar_baumann/nb/slclock/icons/alarm-runs.png";
+    @StaticResource private static final String ICON_PATH_PAUSES = "de/elmar_baumann/nb/slclock/icons/alarm-pauses.png";
+    private static final Icon ICON_RUNS = ImageUtilities.loadImageIcon(ICON_PATH_RUNS, false);
+    private static final Icon ICON_PAUSES = ImageUtilities.loadImageIcon(ICON_PATH_PAUSES, false);
 
     public AlarmClockPanel() {
         initComponents();
-        model.init();
         setIcon();
-        model.addPropertyChangeListener(iconListener);
-        addMouseListener(preferencesDialogDisplayer);
-        labelAlarmClock.addMouseListener(preferencesDialogDisplayer);
         setToolTipText(labelAlarmClock.getToolTipText());
+        addMouseListener(preferencesDialogDisplayer);
+        AlarmEventsModel.getInstance().addPropertyChangeListener(iconUpdater);
+        labelAlarmClock.addMouseListener(preferencesDialogDisplayer);
+        labelAlarmClock.setVisible(AlarmEventsModel.getInstance().isShowIcon());
     }
 
     private void setIcon() {
-        labelAlarmClock.setIcon(model.getEventCount() > 0
+        labelAlarmClock.setIcon(AlarmEventsModel.getInstance().getRunningEventsCount() > 0
                 ? ICON_RUNS
                 : ICON_PAUSES);
     }
 
-    private final PropertyChangeListener iconListener = new PropertyChangeListener() {
+    private final PropertyChangeListener iconUpdater = new PropertyChangeListener() {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            if (AlarmEventsModel.PROPERTY_EVENTS.equals(evt.getPropertyName())) {
+            String propertyName = evt.getPropertyName();
+            if (AlarmEventsModel.PROPERTY_EVENTS.equals(propertyName)) {
                 setIcon();
+            } else if (AlarmEventsModel.PROPERTY_SHOW_ICON.equals(propertyName)) {
+                labelAlarmClock.setVisible((boolean) evt.getNewValue());
             }
         }
     };
@@ -53,17 +58,7 @@ public class AlarmClockPanel extends javax.swing.JPanel {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (SwingUtilities.isLeftMouseButton(e)) {
-                DialogDescriptor dd = new DialogDescriptor(
-                       new AlarmEventsPanel(model), // innerPane
-                        NbBundle.getMessage(AlarmClockPanel.class, "AlarmClockPanel.PreferencesDialog.Title"), // title
-                        true, // modal
-                        new Object[] {DialogDescriptor.OK_OPTION}, //options
-                        DialogDescriptor.OK_OPTION, // initialValue
-                        DialogDescriptor.DEFAULT_ALIGN, // optionsAlign
-                        null, // helpCtx
-                        null //bl
-                );
-                DialogDisplayer.getDefault().notify(dd);
+                AlarmEventsModel.getInstance().showSettingsGui();
             }
         }
     };
@@ -81,7 +76,7 @@ public class AlarmClockPanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.GridBagLayout());
 
-        labelAlarmClock.setIcon(ICON_PAUSES);
+        labelAlarmClock.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/elmar_baumann/nb/slclock/icons/alarm-pauses.png"))); // NOI18N
         labelAlarmClock.setToolTipText(org.openide.util.NbBundle.getMessage(AlarmClockPanel.class, "AlarmClockPanel.labelAlarmClock.toolTipText")); // NOI18N
         add(labelAlarmClock, new java.awt.GridBagConstraints());
     }// </editor-fold>//GEN-END:initComponents

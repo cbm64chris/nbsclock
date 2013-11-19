@@ -27,6 +27,7 @@ public final class AlarmEvent {
     private String displayName;
     private boolean run;
     private boolean sound;
+    private boolean verbose;
 
     public AlarmEvent() {
         this(0, 0);
@@ -128,6 +129,15 @@ public final class AlarmEvent {
         this.sound = sound;
     }
 
+    @XmlElement(name = "verbose")
+    public boolean isVerbose() {
+        return verbose;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
     public synchronized void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
@@ -179,6 +189,14 @@ public final class AlarmEvent {
         return hash;
     }
 
+    /**
+     * An alarm event is identified by it's hour, minute and days of week.
+     * Other properties will be ignored (it does not seem to make sense, to
+     * have two alarms at exactly the same time).
+     *
+     * @param obj
+     * @return
+     */
     @Override
     public synchronized boolean equals(Object obj) {
         if (obj == this) {
@@ -195,6 +213,7 @@ public final class AlarmEvent {
     }
 
     /**
+     * Compares events for ascending sort order by their hours and minutes.
      * Ignores days of week.
      */
     public static final class AlarmEventCmpAsc implements Comparator<AlarmEvent> {

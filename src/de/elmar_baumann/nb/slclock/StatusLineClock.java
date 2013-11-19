@@ -5,7 +5,7 @@ import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
- * Displays date and time in the status line.
+ * Displays date and time in the status line, has an alarm clock.
  *
  * @author Elmar Baumann
  */

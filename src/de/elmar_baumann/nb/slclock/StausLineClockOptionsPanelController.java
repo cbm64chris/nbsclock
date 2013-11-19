@@ -1,4 +1,4 @@
-package de.elmar_baumann.nb.slclock.clock;
+package de.elmar_baumann.nb.slclock;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -7,17 +7,14 @@ import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
-@OptionsPanelController.SubRegistration(location = "Advanced",
+@OptionsPanelController.SubRegistration(
+    location = "Advanced",
     displayName = "#AdvancedOption_DisplayName_Clock",
     keywords = "#AdvancedOption_Keywords_Clock",
     keywordsCategory = "Advanced/Clock")
-@org.openide.util.NbBundle.Messages({
-    "AdvancedOption_DisplayName_Clock=Clock",
-    "AdvancedOption_Keywords_Clock=Statusline Clock"
-})
-public final class ClockOptionsPanelController extends OptionsPanelController {
+public final class StausLineClockOptionsPanelController extends OptionsPanelController {
 
-    private ClockOptionsPanel panel;
+    private StausLineClockOptionsPanel panel;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private boolean changed;
 
@@ -58,6 +55,13 @@ public final class ClockOptionsPanelController extends OptionsPanelController {
         return getPanel();
     }
 
+    private StausLineClockOptionsPanel getPanel() {
+        if (panel == null) {
+            panel = new StausLineClockOptionsPanel(this);
+        }
+        return panel;
+    }
+
     @Override
     public void addPropertyChangeListener(PropertyChangeListener l) {
         pcs.addPropertyChangeListener(l);
@@ -66,13 +70,6 @@ public final class ClockOptionsPanelController extends OptionsPanelController {
     @Override
     public void removePropertyChangeListener(PropertyChangeListener l) {
         pcs.removePropertyChangeListener(l);
-    }
-
-    private ClockOptionsPanel getPanel() {
-        if (panel == null) {
-            panel = new ClockOptionsPanel(this);
-        }
-        return panel;
     }
 
     void changed() {

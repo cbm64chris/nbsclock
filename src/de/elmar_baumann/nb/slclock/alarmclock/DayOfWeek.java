@@ -50,6 +50,9 @@ public enum DayOfWeek {
         return getGuiString();
     }
 
+    /**
+     * For ascending sort order by Calendar's week value.
+     */
     public static final class CalendarDayOfWeekCmpAsc implements Comparator<DayOfWeek> {
 
         @Override

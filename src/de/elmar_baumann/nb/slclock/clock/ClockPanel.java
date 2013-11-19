@@ -23,17 +23,18 @@ public class ClockPanel extends javax.swing.JPanel {
 
     private static final int REFRESH_INTERVAL_MILLISECONDS = 1000;
     private static final long serialVersionUID = 1L;
-    private final ThreadFactory threadFactory;
-    private final ScheduledExecutorService scheduler;
+    private final ThreadFactory threadFactory = new NamedThreadFactory("StatusLineClock: Clock Updater");
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(threadFactory);
 
     public ClockPanel() {
         initComponents();
         DateFormatArray dateFormatArray = ClockPreferences.restoreDateFormatArray();
         labelClock.setText(dateFormatArray.format(new Date()));
-        dateFormatArray.format(new Date());
-        threadFactory = new NamedThreadFactory("StatusLineClock: Provider");
-        scheduler = Executors.newSingleThreadScheduledExecutor(threadFactory);
-        scheduler.scheduleWithFixedDelay(new ClockLabelUpdater(dateFormatArray), 0, REFRESH_INTERVAL_MILLISECONDS, TimeUnit.MILLISECONDS);
+        scheduler.scheduleWithFixedDelay(
+                new ClockLabelUpdater(dateFormatArray),
+                0, // refresh immediately
+                REFRESH_INTERVAL_MILLISECONDS,
+                TimeUnit.MILLISECONDS);
         labelClock.addMouseListener(preferencesDialogDisplayer);
         labelClock.setToolTipText(getToolTipText());
     }
@@ -43,8 +44,10 @@ public class ClockPanel extends javax.swing.JPanel {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (SwingUtilities.isLeftMouseButton(e)) {
+                ClockPreferencesPanel clockPreferencesPanel = new ClockPreferencesPanel();
+                clockPreferencesPanel.setShowAlarmClockSettingsButton(true);
                 DialogDescriptor dd = new DialogDescriptor(
-                       new ClockPreferencesPanel(), // innerPane
+                       clockPreferencesPanel, // innerPane
                         NbBundle.getMessage(ClockPanel.class, "ClockPanel.PreferencesDialog.Title"), // title
                         true, // modal
                         new Object[] {DialogDescriptor.OK_OPTION}, //options

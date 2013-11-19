@@ -21,21 +21,16 @@ import org.openide.util.NbBundle;
 public class AlarmEventsPanel extends javax.swing.JPanel {
 
     private static final long serialVersionUID = 1L;
-    private final AlarmEventsModel model;
 
-    public AlarmEventsPanel(AlarmEventsModel model) {
-        if (model == null) {
-            throw new NullPointerException("model == null");
-        }
-        this.model = model;
+    public AlarmEventsPanel() {
         initComponents();
-        model.addPropertyChangeListener(modelChangeListener);
+        checkBoxShowIcon.setSelected(AlarmEventsModel.getInstance().isShowIcon());
         addEvents();
     }
 
     private void addEvents() {
         panelEvents.removeAll();
-        List<AlarmEvent> events = new ArrayList<>(model.getEvents());
+        List<AlarmEvent> events = new ArrayList<>(AlarmEventsModel.getInstance().getEvents());
         Collections.sort(events, new AlarmEvent.AlarmEventCmpAsc());
         for (AlarmEvent event : events) {
             addEvent(event);
@@ -52,7 +47,7 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 1.0;
         gbc.insets = new Insets(5, 5, 0, 5);
-        panelEvents.add(new AlarmEventPanel(event, model), gbc);
+        panelEvents.add(new AlarmEventPanel(event), gbc);
     }
 
     private void addVerticalFillPanel() {
@@ -63,6 +58,8 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
     }
 
     private final Action addAction = new AbstractAction() {
+
+        private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -80,17 +77,28 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
             if (DialogDisplayer.getDefault().notify(dd) == DialogDescriptor.OK_OPTION) {
                 AlarmEvent event = alarmEventsEditPanel.save();
                 event.setRun(true);
-                model.addToEvents(event);
+                AlarmEventsModel.getInstance().addToEvents(event);
             }
         }
     };
+
+    public void listenToModelChanges(boolean listen) {
+        if (listen) {
+            AlarmEventsModel.getInstance().addPropertyChangeListener(modelChangeListener);
+        } else {
+            AlarmEventsModel.getInstance().removePropertyChangeListener(modelChangeListener);
+        }
+    }
 
     private final PropertyChangeListener modelChangeListener = new PropertyChangeListener() {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            if (AlarmEventsModel.PROPERTY_EVENTS.equals(evt.getPropertyName())) {
+            String propertyName = evt.getPropertyName();
+            if (AlarmEventsModel.PROPERTY_EVENTS.equals(propertyName)) {
                 addEvents();
+            } else if (AlarmEventsModel.PROPERTY_SHOW_ICON.equals(propertyName)) {
+                checkBoxShowIcon.setSelected((boolean) evt.getNewValue());
             }
         }
     };
@@ -104,12 +112,16 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
+        panelContent = new javax.swing.JPanel();
         scrollPaneAlarmEvents = new javax.swing.JScrollPane();
         panelEvents = new javax.swing.JPanel();
+        checkBoxShowIcon = new javax.swing.JCheckBox();
         panelButtons = new javax.swing.JPanel();
         buttonAdd = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
+
+        panelContent.setLayout(new java.awt.GridBagLayout());
 
         scrollPaneAlarmEvents.setPreferredSize(new java.awt.Dimension(600, 300));
 
@@ -118,34 +130,53 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
         scrollPaneAlarmEvents.setViewportView(panelEvents);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
-        add(scrollPaneAlarmEvents, gridBagConstraints);
+        panelContent.add(scrollPaneAlarmEvents, gridBagConstraints);
+
+        org.openide.awt.Mnemonics.setLocalizedText(checkBoxShowIcon, org.openide.util.NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.checkBoxShowIcon.text")); // NOI18N
+        checkBoxShowIcon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkBoxShowIconActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
+        panelContent.add(checkBoxShowIcon, gridBagConstraints);
 
         panelButtons.setLayout(new java.awt.GridBagLayout());
 
         buttonAdd.setAction(addAction);
         org.openide.awt.Mnemonics.setLocalizedText(buttonAdd, org.openide.util.NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.buttonAdd.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        panelButtons.add(buttonAdd, gridBagConstraints);
+        panelButtons.add(buttonAdd, new java.awt.GridBagConstraints());
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 5, 0, 0);
+        panelContent.add(panelButtons, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 10);
-        add(panelButtons, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        add(panelContent, gridBagConstraints);
     }//GEN-END:initComponents
+
+    private void checkBoxShowIconActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxShowIconActionPerformed
+        AlarmEventsModel.getInstance().setShowIcon(checkBoxShowIcon.isSelected());
+    }//GEN-LAST:event_checkBoxShowIconActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonAdd;
+    private javax.swing.JCheckBox checkBoxShowIcon;
     private javax.swing.JPanel panelButtons;
+    private javax.swing.JPanel panelContent;
     private javax.swing.JPanel panelEvents;
     private javax.swing.JScrollPane scrollPaneAlarmEvents;
     // End of variables declaration//GEN-END:variables

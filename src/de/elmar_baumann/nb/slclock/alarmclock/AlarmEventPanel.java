@@ -12,31 +12,23 @@ import org.openide.util.NbBundle;
  */
 public class AlarmEventPanel extends javax.swing.JPanel {
 
-    public static final String PROPERTY_RUN = "run";
-    public static final String PROPERTY_SELECTED = "selected";
     private static final long serialVersionUID = 1L;
     private static final Icon ICON_START = ImageUtilities.loadImageIcon("de/elmar_baumann/nb/slclock/icons/start.png", false);
     private static final Icon ICON_PAUSE = ImageUtilities.loadImageIcon("de/elmar_baumann/nb/slclock/icons/pause.png", false);
     private AlarmEvent event;
-    private final AlarmEventsModel model;
 
-    public AlarmEventPanel(AlarmEvent event, AlarmEventsModel model) {
+    public AlarmEventPanel(AlarmEvent event) {
         if (event == null) {
             throw new NullPointerException("event == null");
         }
-        if (model == null) {
-            throw new NullPointerException("model == null");
-        }
         this.event = event;
-        this.model = model;
         initComponents();
         eventToGui();
     }
 
     private void eventToGui() {
         labelTime.setText(event.getTimeForGui());
-        String displayName = event.getDisplayName();
-        labelDisplayName.setText(displayName == null ? "" : displayName);
+        labelDisplayName.setText(event.getDisplayName() == null ? "" : event.getDisplayName());
         setButtonIcon();
     }
 
@@ -45,12 +37,10 @@ public class AlarmEventPanel extends javax.swing.JPanel {
     }
 
     private void toggleRun() {
-        boolean old = event.isRun();
-        synchronized (model) {
-            event.setRun(!old);
-        }
+        boolean newRunState = !event.isRun();
+        event.setRun(newRunState);
+        AlarmEventsModel.getInstance().setRun(event, newRunState);
         setButtonIcon();
-        firePropertyChange(PROPERTY_RUN, old, event.isRun());
     }
 
     private void editEvent() {
@@ -68,17 +58,16 @@ public class AlarmEventPanel extends javax.swing.JPanel {
         if (DialogDisplayer.getDefault().notify(dd) == DialogDescriptor.OK_OPTION) {
             AlarmEvent oldEvent = event;
             event = alarmEventEditPanel.save();
-            model.changeEvent(oldEvent, event);
             eventToGui();
+            AlarmEventsModel.getInstance().updateEvent(oldEvent, event);
         }
     }
 
     private void deleteEvent() {
         String msg = NbBundle.getMessage(AlarmClockPanel.class, "AlarmEventPanel.Delete.Confirm", event.getDisplayName());
         NotifyDescriptor nd = new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION);
-        Object result = DialogDisplayer.getDefault().notify(nd);
-        if (result == NotifyDescriptor.YES_OPTION) {
-            model.removeFromEvents(event);
+        if (DialogDisplayer.getDefault().notify(nd) == NotifyDescriptor.YES_OPTION) {
+            AlarmEventsModel.getInstance().removeFromEvents(event);
         }
     }
 
