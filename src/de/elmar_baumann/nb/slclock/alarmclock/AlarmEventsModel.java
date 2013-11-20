@@ -67,17 +67,13 @@ public final class AlarmEventsModel {
             throw new NullPointerException("event == null");
         }
         if (!futuresOfEvents.containsKey(event)) {
-            addEvent(event);
-            try {
-                repository.save(new AlarmEvents(futuresOfEvents.keySet()));
+            scheduleEvent(event);
+            saveEvents();
                 fireEventsChanged();
-            } catch (Throwable t) {
-                Logger.getLogger(AlarmEventsModel.class.getName()).log(Level.SEVERE, null, t);
             }
         }
-    }
 
-    private synchronized void addEvent(AlarmEvent event) {
+    private synchronized void scheduleEvent(AlarmEvent event) {
         Future<?> future = scheduler.scheduleWithFixedDelay(
                 new AlarmEventRunnable(event),
                 getInitialDelayInSeconds(),
@@ -101,13 +97,9 @@ public final class AlarmEventsModel {
         }
         futuresOfEvents.get(event).cancel(false);
         futuresOfEvents.remove(event);
-        try {
-            repository.save(new AlarmEvents(futuresOfEvents.keySet()));
+        saveEvents();
             fireEventsChanged();
-        } catch (Throwable t) {
-            Logger.getLogger(AlarmEventsModel.class.getName()).log(Level.SEVERE, null, t);
         }
-    }
 
     public synchronized void updateEvent(AlarmEvent oldEvent, AlarmEvent newEvent) {
         if (oldEvent == null) {
@@ -119,7 +111,8 @@ public final class AlarmEventsModel {
         if (futuresOfEvents.containsKey(oldEvent)) {
             futuresOfEvents.get(oldEvent).cancel(false);
             futuresOfEvents.remove(oldEvent);
-            addEvent(newEvent);
+            scheduleEvent(newEvent);
+            saveEvents();
             fireEventsChanged();
         }
     }
@@ -128,19 +121,30 @@ public final class AlarmEventsModel {
         if (event == null) {
             throw new NullPointerException("event == null");
         }
+        AlarmEvent e = findEvent(event);
+        if (e != null) {
+            e.setRun(run);
+            saveEvents();
+            fireEventsChanged();
+        }
+    }
+
+    private synchronized AlarmEvent findEvent(AlarmEvent event) {
         for (AlarmEvent e : futuresOfEvents.keySet()) {
             if (e.equals(event)) {
-                e.setRun(run);
+                return e;
+            }
+        }
+        return null;
+    }
+
+    private synchronized void saveEvents() {
                 try {
                     repository.save(new AlarmEvents(futuresOfEvents.keySet()));
                 } catch (Throwable t) {
                     Logger.getLogger(AlarmEventsModel.class.getName()).log(Level.SEVERE, null, t);
                 }
-                fireEventsChanged();
-                break;
             }
-        }
-    }
 
     public boolean isShowIcon() {
         return showIcon;
@@ -237,7 +241,7 @@ public final class AlarmEventsModel {
     private AlarmEventsModel() {
         try {
             for (AlarmEvent event : repository.load().getEvents()) {
-                addEvent(event);
+                scheduleEvent(event);
 }
         } catch (Throwable t) {
             Logger.getLogger(AlarmEventsModel.class.getName()).log(Level.SEVERE, null, t);

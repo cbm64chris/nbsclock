@@ -46,6 +46,7 @@ public final class AlarmEvent {
         this.displayName = other.displayName;
         this.run = other.run;
         this.sound = other.sound;
+        this.verbose = other.verbose;
     }
 
     @XmlElement(name = "hour")

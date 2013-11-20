@@ -8,10 +8,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
 import org.netbeans.api.annotations.common.StaticResource;
-import org.openide.DialogDescriptor;
-import org.openide.DialogDisplayer;
 import org.openide.util.ImageUtilities;
-import org.openide.util.NbBundle;
 
 /**
  * @author Elmar Baumann
@@ -27,7 +24,6 @@ public class AlarmClockPanel extends javax.swing.JPanel {
     public AlarmClockPanel() {
         initComponents();
         setIcon();
-        setToolTipText(labelAlarmClock.getToolTipText());
         addMouseListener(preferencesDialogDisplayer);
         AlarmEventsModel.getInstance().addPropertyChangeListener(iconUpdater);
         labelAlarmClock.addMouseListener(preferencesDialogDisplayer);
@@ -77,7 +73,6 @@ public class AlarmClockPanel extends javax.swing.JPanel {
         setLayout(new java.awt.GridBagLayout());
 
         labelAlarmClock.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/elmar_baumann/nb/slclock/icons/alarm-pauses.png"))); // NOI18N
-        labelAlarmClock.setToolTipText(org.openide.util.NbBundle.getMessage(AlarmClockPanel.class, "AlarmClockPanel.labelAlarmClock.toolTipText")); // NOI18N
         add(labelAlarmClock, new java.awt.GridBagConstraints());
     }// </editor-fold>//GEN-END:initComponents
 
