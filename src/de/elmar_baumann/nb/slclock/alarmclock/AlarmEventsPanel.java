@@ -1,5 +1,6 @@
 package de.elmar_baumann.nb.slclock.alarmclock;
 
+import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -91,15 +92,19 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
     }
 
     private final PropertyChangeListener modelChangeListener = new PropertyChangeListener() {
-
         @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            String propertyName = evt.getPropertyName();
-            if (AlarmEventsModel.PROPERTY_EVENTS.equals(propertyName)) {
-                addEvents();
-            } else if (AlarmEventsModel.PROPERTY_SHOW_ICON.equals(propertyName)) {
-                checkBoxShowIcon.setSelected((boolean) evt.getNewValue());
-            }
+        public void propertyChange(final PropertyChangeEvent evt) {
+            EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    String propertyName = evt.getPropertyName();
+                    if (AlarmEventsModel.PROPERTY_EVENTS.equals(propertyName)) {
+                        addEvents();
+                    } else if (AlarmEventsModel.PROPERTY_SHOW_ICON.equals(propertyName)) {
+                        checkBoxShowIcon.setSelected((boolean) evt.getNewValue());
+                    }
+                }
+            });
         }
     };
 

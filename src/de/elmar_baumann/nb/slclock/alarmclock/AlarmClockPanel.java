@@ -1,5 +1,6 @@
 package de.elmar_baumann.nb.slclock.alarmclock;
 
+import java.awt.EventQueue;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -37,15 +38,19 @@ public class AlarmClockPanel extends javax.swing.JPanel {
     }
 
     private final PropertyChangeListener iconUpdater = new PropertyChangeListener() {
-
         @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            String propertyName = evt.getPropertyName();
-            if (AlarmEventsModel.PROPERTY_EVENTS.equals(propertyName)) {
-                setIcon();
-            } else if (AlarmEventsModel.PROPERTY_SHOW_ICON.equals(propertyName)) {
-                labelAlarmClock.setVisible((boolean) evt.getNewValue());
-            }
+        public void propertyChange(final PropertyChangeEvent evt) {
+            EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    String propertyName = evt.getPropertyName();
+                    if (AlarmEventsModel.PROPERTY_EVENTS.equals(propertyName)) {
+                        setIcon();
+                    } else if (AlarmEventsModel.PROPERTY_SHOW_ICON.equals(propertyName)) {
+                        labelAlarmClock.setVisible((boolean) evt.getNewValue());
+                    }
+                }
+            });
         }
     };
 
