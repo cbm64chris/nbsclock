@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
+import org.netbeans.api.annotations.common.StaticResource;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -158,6 +159,7 @@ public final class AlarmEventsModel {
 
     private final class AlarmEventRunnable implements Runnable {
 
+        @StaticResource private static final String ICON_PATH_ALARM_RUNS = "de/elmar_baumann/nb/slclock/icons/alarm-runs.png";
         private final AlarmEvent event;
 
         private AlarmEventRunnable(AlarmEvent event) {
@@ -180,7 +182,7 @@ public final class AlarmEventsModel {
                 public void run() {
                     NotificationDisplayer.getDefault().notify(
                             NbBundle.getMessage(AlarmEventRunnable.class, "AlarmEventRunnable.Notification.Title"),
-                            ImageUtilities.loadImageIcon("de/elmar_baumann/nb/slclock/icons/alarm-runs.png", false),
+                            ImageUtilities.loadImageIcon(ICON_PATH_ALARM_RUNS, false),
                             NbBundle.getMessage(AlarmEventRunnable.class, "AlarmEventRunnable.Notification.Details", event),
                             null // detailsAction
                     );

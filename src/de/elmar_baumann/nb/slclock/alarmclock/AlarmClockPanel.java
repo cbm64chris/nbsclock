@@ -17,10 +17,10 @@ import org.openide.util.ImageUtilities;
 public class AlarmClockPanel extends javax.swing.JPanel {
 
     private static final long serialVersionUID = 1L;
-    @StaticResource private static final String ICON_PATH_RUNS = "de/elmar_baumann/nb/slclock/icons/alarm-runs.png";
-    @StaticResource private static final String ICON_PATH_PAUSES = "de/elmar_baumann/nb/slclock/icons/alarm-pauses.png";
-    private static final Icon ICON_RUNS = ImageUtilities.loadImageIcon(ICON_PATH_RUNS, false);
-    private static final Icon ICON_PAUSES = ImageUtilities.loadImageIcon(ICON_PATH_PAUSES, false);
+    @StaticResource private static final String ICON_PATH_ALARM_RUNS = "de/elmar_baumann/nb/slclock/icons/alarm-runs.png";
+    @StaticResource private static final String ICON_PATH_ALARM_PAUSES = "de/elmar_baumann/nb/slclock/icons/alarm-pauses.png";
+    private static final Icon ICON_RUNS = ImageUtilities.loadImageIcon(ICON_PATH_ALARM_RUNS, false);
+    private static final Icon ICON_PAUSES = ImageUtilities.loadImageIcon(ICON_PATH_ALARM_PAUSES, false);
 
     public AlarmClockPanel() {
         initComponents();

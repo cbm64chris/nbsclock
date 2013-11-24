@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
+import org.netbeans.api.annotations.common.StaticResource;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.NotificationDisplayer;
@@ -155,6 +156,7 @@ public final class TimerEventsModel {
 
     private final class TimerEventRunnable implements Runnable {
 
+        @StaticResource private static final String ICON_PATH_TIMER_RUNS = "de/elmar_baumann/nb/slclock/icons/timer-runs.png";
         private final TimerEvent event;
 
         private TimerEventRunnable(TimerEvent event) {
@@ -179,7 +181,7 @@ public final class TimerEventsModel {
                 public void run() {
                     NotificationDisplayer.getDefault().notify(
                             NbBundle.getMessage(TimerEventRunnable.class, "TimerEventRunnable.Notification.Title"),
-                            ImageUtilities.loadImageIcon("de/elmar_baumann/nb/slclock/icons/alarm-runs.png", false),
+                            ImageUtilities.loadImageIcon(ICON_PATH_TIMER_RUNS, false),
                             NbBundle.getMessage(TimerEventRunnable.class, "TimerEventRunnable.Notification.Details", event),
                             null // detailsAction
                     );
