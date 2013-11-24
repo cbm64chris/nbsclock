@@ -14,6 +14,8 @@ import org.netbeans.api.annotations.common.NullAllowed;
 public final class TimerEvent {
 
     private int seconds;
+    private long remainingSeconds;
+    private long startTimeInNanos;
     private String displayName;
     private boolean verbose;
     private boolean sound;
@@ -95,6 +97,22 @@ public final class TimerEvent {
 
     public void setPersistent(boolean persistent) {
         this.persistent = persistent;
+    }
+
+    public long getRemainingSeconds() {
+        return remainingSeconds;
+    }
+
+    public void setRemainingSeconds(long remainingSeconds) {
+        this.remainingSeconds = remainingSeconds;
+    }
+
+    public long getStartTimeInNanos() {
+        return startTimeInNanos;
+    }
+
+    public void setStartTimeInNanos(long startTimeInNanos) {
+        this.startTimeInNanos = startTimeInNanos;
     }
 
     @Override

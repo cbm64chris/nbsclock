@@ -52,7 +52,7 @@ public final class AlarmEventsModel {
         return futuresOfEvents.keySet();
     }
 
-    public int getRunningEventsCount() {
+    public synchronized int getRunningEventsCount() {
         int count = 0;
         for (AlarmEvent evt : futuresOfEvents.keySet()) {
             if (evt.isRun()) {
@@ -82,7 +82,7 @@ public final class AlarmEventsModel {
         futuresOfEvents.put(event, future);
     }
 
-    private long getInitialDelayInSeconds() {
+    private synchronized long getInitialDelayInSeconds() {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(System.currentTimeMillis());
         return 60 - cal.get(Calendar.SECOND);
@@ -122,7 +122,7 @@ public final class AlarmEventsModel {
             throw new NullPointerException("event == null");
         }
         AlarmEvent e = findEvent(event);
-        if (e != null) {
+        if (e != null && run != e.isRun()) {
             e.setRun(run);
             saveEvents();
             fireEventsChanged();

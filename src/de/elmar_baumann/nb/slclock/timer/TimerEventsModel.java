@@ -6,7 +6,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,7 +52,7 @@ public final class TimerEventsModel {
         return futuresOfEvents.keySet();
     }
 
-    public int getRunningEventsCount() {
+    public synchronized int getRunningEventsCount() {
         int count = 0;
         for (TimerEvent evt : futuresOfEvents.keySet()) {
             if (evt.isRun()) {
@@ -65,34 +67,55 @@ public final class TimerEventsModel {
             throw new NullPointerException("event == null");
         }
         if (!futuresOfEvents.containsKey(event)) {
-            futuresOfEvents.put(event, null);
             saveEvents();
+            if (event.isRun()) {
+                scheduleEvent(event);
+            } else {
+                futuresOfEvents.put(event, null);
+            }
             fireEventsChanged();
         }
     }
 
-    public synchronized void scheduleEvent(TimerEvent event) {
-        Future<?> future = scheduler.schedule(
+    public synchronized void clear() {
+        Set<TimerEvent> events = new HashSet<>(futuresOfEvents.keySet());
+        for (TimerEvent event : events) {
+            removeFromEvents(event);
+        }
+    }
+
+    public synchronized int getEventCount() {
+        return futuresOfEvents.size();
+    }
+
+    private synchronized void scheduleEvent(TimerEvent event) {
+        event.setStartTimeInNanos(System.nanoTime());
+        Future<?> future = scheduler.scheduleWithFixedDelay(
                 new TimerEventRunnable(event),
-                event.getSeconds(),
+                0, // no delay
+                1, // every second
                 TimeUnit.SECONDS);
         futuresOfEvents.put(event, future);
+    }
+
+    private synchronized void unscheduleEvent(TimerEvent event) {
+        Future<?> future = futuresOfEvents.get(event);
+        if (future != null) {
+            future.cancel(false);
+            futuresOfEvents.put(event, null);
+        }
     }
 
     public synchronized void removeFromEvents(TimerEvent event) {
         if (event == null) {
             throw new NullPointerException("event == null");
         }
-        if (!futuresOfEvents.containsKey(event)) {
-            return;
+        if (futuresOfEvents.containsKey(event)) {
+            unscheduleEvent(event);
+            futuresOfEvents.remove(event);
+            saveEvents();
+            fireEventsChanged();
         }
-        Future<?> future = futuresOfEvents.get(event);
-        if (future != null) {
-            future.cancel(false);
-        }
-        futuresOfEvents.remove(event);
-        saveEvents();
-        fireEventsChanged();
     }
 
     public synchronized void updateEvent(TimerEvent oldEvent, TimerEvent newEvent) {
@@ -103,25 +126,24 @@ public final class TimerEventsModel {
             throw new NullPointerException("newEvent == null");
         }
         if (futuresOfEvents.containsKey(oldEvent)) {
-            Future<?> future = futuresOfEvents.get(oldEvent);
-            if (future != null) {
-                future.cancel(false);
-            }
+            unscheduleEvent(oldEvent);
             futuresOfEvents.remove(oldEvent);
-            saveEvents();
-            fireEventsChanged();
+            addToEvents(newEvent); // saves events and notifies listeners
         }
     }
 
     public synchronized void setRun(TimerEvent event, boolean run) {
-        // TODO pause
         if (event == null) {
             throw new NullPointerException("event == null");
         }
         TimerEvent e = findEvent(event);
-        if (e != null) {
+        if (e != null && run != e.isRun()) {
             e.setRun(run);
-            saveEvents();
+            if (run) {
+                scheduleEvent(event);
+            } else {
+                unscheduleEvent(event);
+            }
             fireEventsChanged();
         }
     }
@@ -143,11 +165,11 @@ public final class TimerEventsModel {
         }
     }
 
-    public boolean isShowIcon() {
+    public synchronized boolean isShowIcon() {
         return showIcon;
     }
 
-    public void setShowIcon(boolean show) {
+    public synchronized void setShowIcon(boolean show) {
         boolean old = this.showIcon;
         this.showIcon = show;
         NbPreferences.forModule(TimerEventsModel.class).putBoolean(KEY_SHOW_ICON, show);
@@ -165,13 +187,17 @@ public final class TimerEventsModel {
 
         @Override
         public void run() {
-            notifyTimer();
-            if (event.isPersistent()) {
-                synchronized(TimerEventsModel.this) {
-                    futuresOfEvents.put(event, null);
+            event.setRemainingSeconds((System.nanoTime() - event.getStartTimeInNanos()) * 1_000_000_000);
+            if (event.getRemainingSeconds() < 1) {
+                notifyTimer();
+                synchronized (TimerEventsModel.this) {
+                    if (event.isPersistent()) {
+                        unscheduleEvent(event);
+                        event.setRun(false);
+                    } else {
+                        removeFromEvents(event);
+                    }
                 }
-            } else {
-                removeFromEvents(event);
             }
         }
 
@@ -236,7 +262,7 @@ public final class TimerEventsModel {
     private TimerEventsModel() {
         try {
             for (TimerEvent event : repository.load().getEvents()) {
-                scheduleEvent(event);
+                futuresOfEvents.put(event, null);
             }
         } catch (Throwable t) {
             Logger.getLogger(TimerEventsModel.class.getName()).log(Level.SEVERE, null, t);
