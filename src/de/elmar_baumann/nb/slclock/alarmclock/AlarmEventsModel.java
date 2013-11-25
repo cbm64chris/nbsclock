@@ -1,7 +1,6 @@
 package de.elmar_baumann.nb.slclock.alarmclock;
 
 import de.elmar_baumann.nb.slclock.util.NamedThreadFactory;
-import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -17,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
+import org.netbeans.api.annotations.common.StaticResource;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -52,26 +52,28 @@ public final class AlarmEventsModel {
         return futuresOfEvents.keySet();
     }
 
-    public int getRunningEventsCount() {
+    public synchronized int getRunningEventsCount() {
         int count = 0;
         for (AlarmEvent evt : futuresOfEvents.keySet()) {
             if (evt.isRun()) {
                 count++;
-    }
+            }
         }
         return count;
     }
 
-    public synchronized void addToEvents(AlarmEvent event) {
+    public synchronized boolean addToEvents(AlarmEvent event) {
         if (event == null) {
             throw new NullPointerException("event == null");
         }
         if (!futuresOfEvents.containsKey(event)) {
             scheduleEvent(event);
             saveEvents();
-                fireEventsChanged();
-            }
+            fireEventsChanged();
+            return true;
         }
+        return false;
+    }
 
     private synchronized void scheduleEvent(AlarmEvent event) {
         Future<?> future = scheduler.scheduleWithFixedDelay(
@@ -82,7 +84,7 @@ public final class AlarmEventsModel {
         futuresOfEvents.put(event, future);
     }
 
-    private long getInitialDelayInSeconds() {
+    private synchronized long getInitialDelayInSeconds() {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(System.currentTimeMillis());
         return 60 - cal.get(Calendar.SECOND);
@@ -98,8 +100,8 @@ public final class AlarmEventsModel {
         futuresOfEvents.get(event).cancel(false);
         futuresOfEvents.remove(event);
         saveEvents();
-            fireEventsChanged();
-        }
+        fireEventsChanged();
+    }
 
     public synchronized void updateEvent(AlarmEvent oldEvent, AlarmEvent newEvent) {
         if (oldEvent == null) {
@@ -122,7 +124,7 @@ public final class AlarmEventsModel {
             throw new NullPointerException("event == null");
         }
         AlarmEvent e = findEvent(event);
-        if (e != null) {
+        if (e != null && run != e.isRun()) {
             e.setRun(run);
             saveEvents();
             fireEventsChanged();
@@ -139,18 +141,18 @@ public final class AlarmEventsModel {
     }
 
     private synchronized void saveEvents() {
-                try {
-                    repository.save(new AlarmEvents(futuresOfEvents.keySet()));
-                } catch (Throwable t) {
-                    Logger.getLogger(AlarmEventsModel.class.getName()).log(Level.SEVERE, null, t);
-                }
-            }
+        try {
+            repository.save(new AlarmEvents(futuresOfEvents.keySet()));
+        } catch (Throwable t) {
+            Logger.getLogger(AlarmEventsModel.class.getName()).log(Level.SEVERE, null, t);
+        }
+    }
 
-    public boolean isShowIcon() {
+    public synchronized boolean isShowIcon() {
         return showIcon;
     }
 
-    public void setShowIcon(boolean show) {
+    public synchronized void setShowIcon(boolean show) {
         boolean old = this.showIcon;
         this.showIcon = show;
         NbPreferences.forModule(AlarmEventsModel.class).putBoolean(KEY_SHOW_ICON, show);
@@ -159,6 +161,7 @@ public final class AlarmEventsModel {
 
     private final class AlarmEventRunnable implements Runnable {
 
+        @StaticResource private static final String ICON_PATH_ALARM_RUNS = "de/elmar_baumann/nb/slclock/icons/alarm-runs.png";
         private final AlarmEvent event;
 
         private AlarmEventRunnable(AlarmEvent event) {
@@ -170,12 +173,7 @@ public final class AlarmEventsModel {
             if (event.isAlarm(System.currentTimeMillis())) {
                 notifyAlarm();
                 if (!event.isRepeatable()) {
-                    EventQueue.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            removeFromEvents(event);
-                        }
-                    });
+                    removeFromEvents(event);
                 }
             }
         }
@@ -186,7 +184,7 @@ public final class AlarmEventsModel {
                 public void run() {
                     NotificationDisplayer.getDefault().notify(
                             NbBundle.getMessage(AlarmEventRunnable.class, "AlarmEventRunnable.Notification.Title"),
-                            ImageUtilities.loadImageIcon("de/elmar_baumann/nb/slclock/icons/alarm-runs.png", false),
+                            ImageUtilities.loadImageIcon(ICON_PATH_ALARM_RUNS, false),
                             NbBundle.getMessage(AlarmEventRunnable.class, "AlarmEventRunnable.Notification.Details", event),
                             null // detailsAction
                     );
@@ -220,18 +218,18 @@ public final class AlarmEventsModel {
         alarmEventsPanel.listenToModelChanges(false);
     }
 
-    private void fireEventsChanged() {
+    private synchronized void fireEventsChanged() {
         pcs.firePropertyChange(PROPERTY_EVENTS, false, true);
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    public synchronized void addPropertyChangeListener(PropertyChangeListener listener) {
         if (listener == null) {
             throw new NullPointerException("listener == null");
         }
         pcs.addPropertyChangeListener(listener);
     }
 
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    public synchronized void removePropertyChangeListener(PropertyChangeListener listener) {
         if (listener == null) {
             throw new NullPointerException("listener == null");
         }
@@ -242,7 +240,7 @@ public final class AlarmEventsModel {
         try {
             for (AlarmEvent event : repository.load().getEvents()) {
                 scheduleEvent(event);
-}
+            }
         } catch (Throwable t) {
             Logger.getLogger(AlarmEventsModel.class.getName()).log(Level.SEVERE, null, t);
         }

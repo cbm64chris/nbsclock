@@ -10,6 +10,7 @@ public final class StausLineClockOptionsPanel extends javax.swing.JPanel {
         this.controller = controller;
         initComponents();
         panelAlarmEvents.listenToModelChanges(true);
+        panelTimerEvents.listenToModelChanges(true);
         // TODO listen to changes in form fields and call controller.changed()
     }
 
@@ -24,11 +25,13 @@ public final class StausLineClockOptionsPanel extends javax.swing.JPanel {
         tabbedPane = new javax.swing.JTabbedPane();
         panelClockPreferences = new de.elmar_baumann.nb.slclock.clock.ClockPreferencesPanel();
         panelAlarmEvents = new de.elmar_baumann.nb.slclock.alarmclock.AlarmEventsPanel();
+        panelTimerEvents = new de.elmar_baumann.nb.slclock.timer.TimerEventsPanel();
 
         setLayout(new java.awt.GridBagLayout());
 
         tabbedPane.addTab(org.openide.util.NbBundle.getMessage(StausLineClockOptionsPanel.class, "StausLineClockOptionsPanel.panelClockPreferences.TabConstraints.tabTitle"), panelClockPreferences); // NOI18N
         tabbedPane.addTab(org.openide.util.NbBundle.getMessage(StausLineClockOptionsPanel.class, "StausLineClockOptionsPanel.panelAlarmEvents.TabConstraints.tabTitle"), panelAlarmEvents); // NOI18N
+        tabbedPane.addTab(org.openide.util.NbBundle.getBundle(StausLineClockOptionsPanel.class).getString("StausLineClockOptionsPanel.panelTimerEvents.TabConstraints.tabTitle"), panelTimerEvents); // NOI18N
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -67,6 +70,7 @@ public final class StausLineClockOptionsPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.elmar_baumann.nb.slclock.alarmclock.AlarmEventsPanel panelAlarmEvents;
     private de.elmar_baumann.nb.slclock.clock.ClockPreferencesPanel panelClockPreferences;
+    private de.elmar_baumann.nb.slclock.timer.TimerEventsPanel panelTimerEvents;
     private javax.swing.JTabbedPane tabbedPane;
     // End of variables declaration//GEN-END:variables
 }

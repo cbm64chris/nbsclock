@@ -1,5 +1,9 @@
-package de.elmar_baumann.nb.slclock.alarmclock;
+package de.elmar_baumann.nb.slclock.timer;
 
+import de.elmar_baumann.nb.slclock.timer.TimerEventsModel.TimerScheduleEvent;
+import java.awt.EventQueue;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.Icon;
 import org.netbeans.api.annotations.common.StaticResource;
 import org.openide.DialogDescriptor;
@@ -11,46 +15,59 @@ import org.openide.util.NbBundle;
 /**
  * @author Elmar Baumann
  */
-public class AlarmEventPanel extends javax.swing.JPanel {
+public class TimerEventPanel extends javax.swing.JPanel {
 
     private static final long serialVersionUID = 1L;
     @StaticResource private static final String ICON_PATH_START = "de/elmar_baumann/nb/slclock/icons/start.png";
     @StaticResource private static final String ICON_PATH_PAUSE = "de/elmar_baumann/nb/slclock/icons/pause.png";
     private static final Icon ICON_START = ImageUtilities.loadImageIcon(ICON_PATH_START, false);
     private static final Icon ICON_PAUSE = ImageUtilities.loadImageIcon(ICON_PATH_PAUSE, false);
-    private AlarmEvent event;
+    private TimerEvent event;
 
-    public AlarmEventPanel(AlarmEvent event) {
+    public TimerEventPanel(TimerEvent event) {
         if (event == null) {
             throw new NullPointerException("event == null");
         }
         this.event = event;
         initComponents();
+        TimerEventsModel.getInstance().addPropertyChangeListener(timerUpdateListener);
         eventToGui();
     }
 
     private void eventToGui() {
-        labelTime.setText(event.getTimeForGui());
+        labelTime.setText(getTime());
         labelDisplayName.setText(event.getDisplayName() == null ? "" : event.getDisplayName());
-        setButtonIcon();
+        setButtons();
     }
 
-    private void setButtonIcon() {
+    private String getTime() {
+        return event.getRemainingSeconds() == 0
+                ? event.getTimeForGui()
+                : TimerEvent.formatTimeForGui((int) event.getRemainingSeconds());
+    }
+
+    private void setButtons() {
         buttonRun.setIcon(event.isRun() ? ICON_PAUSE : ICON_START);
+        buttonStop.setEnabled(event.isRun());
     }
 
     private void toggleRun() {
         boolean newRunState = !event.isRun();
         event.setRun(newRunState);
-        AlarmEventsModel.getInstance().setRun(event, newRunState);
-        setButtonIcon();
+        TimerEventsModel.getInstance().setPause(event, newRunState);
+        setButtons();
+    }
+
+    private void stop() {
+        TimerEventsModel.getInstance().setStop(event);
+        setButtons();
     }
 
     private void editEvent() {
-        AlarmEventEditPanel alarmEventEditPanel = new AlarmEventEditPanel(new AlarmEvent(event));
+        TimerEventEditPanel timerEventEditPanel = new TimerEventEditPanel(new TimerEvent(event));
         DialogDescriptor dd = new DialogDescriptor(
-                alarmEventEditPanel, // innerPane
-                NbBundle.getMessage(AlarmEventPanel.class, "AlarmEventPanel.Edit.Title"), // title
+                timerEventEditPanel, // innerPane
+                NbBundle.getMessage(TimerEventPanel.class, "TimerEventPanel.Edit.Title"), // title
                 true, // modal
                 new Object[]{DialogDescriptor.OK_OPTION, DialogDescriptor.CANCEL_OPTION}, //options
                 DialogDescriptor.OK_OPTION, // initialValue
@@ -59,20 +76,42 @@ public class AlarmEventPanel extends javax.swing.JPanel {
                 null //bl
         );
         if (DialogDisplayer.getDefault().notify(dd) == DialogDescriptor.OK_OPTION) {
-            AlarmEvent oldEvent = event;
-            event = alarmEventEditPanel.save();
+            TimerEvent oldEvent = event;
+            event = timerEventEditPanel.save();
             eventToGui();
-            AlarmEventsModel.getInstance().updateEvent(oldEvent, event);
+            TimerEventsModel.getInstance().updateEvent(oldEvent, event);
         }
     }
 
     private void deleteEvent() {
-        String msg = NbBundle.getMessage(AlarmEventPanel.class, "AlarmEventPanel.Delete.Confirm", event.getDisplayName());
+        String msg = NbBundle.getMessage(TimerEventPanel.class, "TimerEventPanel.Delete.Confirm", event.getDisplayName());
         NotifyDescriptor nd = new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION);
         if (DialogDisplayer.getDefault().notify(nd) == NotifyDescriptor.YES_OPTION) {
-            AlarmEventsModel.getInstance().removeFromEvents(event);
+            TimerEventsModel.getInstance().removeFromEvents(event);
+            TimerEventsModel.getInstance().removePropertyChangeListener(timerUpdateListener);
         }
     }
+
+    private final PropertyChangeListener timerUpdateListener = new PropertyChangeListener() {
+
+        @Override
+        public void propertyChange(final PropertyChangeEvent evt) {
+            if (TimerEventsModel.PROPERTY_TIME.equals(evt.getPropertyName())) {
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        Object val = evt.getNewValue();
+                        if (val instanceof TimerScheduleEvent) {
+                            TimerScheduleEvent e = (TimerScheduleEvent) val;
+                            if (event.equals(e.getEvent())) {
+                                labelTime.setText(TimerEvent.formatTimeForGui((int) e.getRemainingSeconds()));
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    };
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -84,13 +123,14 @@ public class AlarmEventPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         buttonRun = new javax.swing.JButton();
+        buttonStop = new javax.swing.JButton();
         buttonEdit = new javax.swing.JButton();
         buttonRemove = new javax.swing.JButton();
         labelTime = new javax.swing.JLabel();
         labelDisplayName = new javax.swing.JLabel();
 
         buttonRun.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/elmar_baumann/nb/slclock/icons/start.png"))); // NOI18N
-        buttonRun.setToolTipText(org.openide.util.NbBundle.getMessage(AlarmEventPanel.class, "AlarmEventPanel.buttonRun.toolTipText")); // NOI18N
+        buttonRun.setToolTipText(org.openide.util.NbBundle.getMessage(TimerEventPanel.class, "TimerEventPanel.buttonRun.toolTipText")); // NOI18N
         buttonRun.setMargin(new java.awt.Insets(0, 0, 0, 0));
         buttonRun.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -98,14 +138,23 @@ public class AlarmEventPanel extends javax.swing.JPanel {
             }
         });
 
-        buttonEdit.setText(org.openide.util.NbBundle.getMessage(AlarmEventPanel.class, "AlarmEventPanel.buttonEdit.text")); // NOI18N
+        buttonStop.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/elmar_baumann/nb/slclock/icons/stop.png"))); // NOI18N
+        buttonStop.setToolTipText(org.openide.util.NbBundle.getMessage(TimerEventPanel.class, "TimerEventPanel.buttonStop.toolTipText")); // NOI18N
+        buttonStop.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        buttonStop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonStopActionPerformed(evt);
+            }
+        });
+
+        buttonEdit.setText(org.openide.util.NbBundle.getMessage(TimerEventPanel.class, "TimerEventPanel.buttonEdit.text")); // NOI18N
         buttonEdit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonEditActionPerformed(evt);
             }
         });
 
-        buttonRemove.setText(org.openide.util.NbBundle.getMessage(AlarmEventPanel.class, "AlarmEventPanel.buttonRemove.text")); // NOI18N
+        buttonRemove.setText(org.openide.util.NbBundle.getMessage(TimerEventPanel.class, "TimerEventPanel.buttonRemove.text")); // NOI18N
         buttonRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonRemoveActionPerformed(evt);
@@ -119,6 +168,8 @@ public class AlarmEventPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(buttonRun)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonStop)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonEdit)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonRemove)
@@ -126,7 +177,7 @@ public class AlarmEventPanel extends javax.swing.JPanel {
                 .addComponent(labelTime)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(labelDisplayName)
-                .addContainerGap(139, Short.MAX_VALUE))
+                .addContainerGap(112, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -135,7 +186,8 @@ public class AlarmEventPanel extends javax.swing.JPanel {
                 .addComponent(buttonRun)
                 .addComponent(buttonRemove)
                 .addComponent(buttonEdit)
-                .addComponent(labelTime))
+                .addComponent(labelTime)
+                .addComponent(buttonStop))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -151,10 +203,15 @@ public class AlarmEventPanel extends javax.swing.JPanel {
         editEvent();
     }//GEN-LAST:event_buttonEditActionPerformed
 
+    private void buttonStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStopActionPerformed
+        stop();
+    }//GEN-LAST:event_buttonStopActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonEdit;
     private javax.swing.JButton buttonRemove;
     private javax.swing.JButton buttonRun;
+    private javax.swing.JButton buttonStop;
     private javax.swing.JLabel labelDisplayName;
     private javax.swing.JLabel labelTime;
     // End of variables declaration//GEN-END:variables
