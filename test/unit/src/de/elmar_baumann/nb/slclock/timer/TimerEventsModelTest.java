@@ -35,14 +35,14 @@ public class TimerEventsModelTest {
             evt1.setSeconds(60);
             model.addToEvents(evt1);
             Assert.assertEquals(0, model.getRunningEventsCount());
-            model.setRun(evt1, true);
+            model.setPause(evt1, true);
             Assert.assertEquals(1, model.getRunningEventsCount());
             TimerEvent evt2 = new TimerEvent();
             evt2.setSeconds(70);
             evt2.setRun(true);
             model.addToEvents(evt2);
             Assert.assertEquals(2, model.getRunningEventsCount());
-            model.setRun(evt2, false);
+            model.setPause(evt2, false);
             Assert.assertEquals(1, model.getRunningEventsCount());
         } finally {
             model.clear();
@@ -100,10 +100,10 @@ public class TimerEventsModelTest {
             evt1.setSeconds(600);
             model.addToEvents(evt1);
             Assert.assertEquals(0, model.getRunningEventsCount());
-            model.setRun(evt1, true);
+            model.setPause(evt1, true);
             Assert.assertEquals(1, model.getRunningEventsCount());
             Assert.assertTrue(model.getEvents().iterator().next().isRun());
-            model.setRun(evt1, false);
+            model.setPause(evt1, false);
             Assert.assertEquals(0, model.getRunningEventsCount());
             Assert.assertFalse(model.getEvents().iterator().next().isRun());
         } finally {

@@ -13,8 +13,8 @@
    height="16px"
    id="svg3143"
    sodipodi:version="0.32"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="alarm-runs-1.svg"
+   inkscape:version="0.48.0 r9654"
+   sodipodi:docname="alarm-pauses.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.1"
    inkscape:export-filename="alarm-pauses.png"
@@ -29,7 +29,7 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="41.375"
+     inkscape:zoom="38.4375"
      inkscape:cx="8"
      inkscape:cy="8"
      inkscape:current-layer="layer1"
@@ -40,8 +40,8 @@
      inkscape:guide-bbox="true"
      inkscape:window-width="1553"
      inkscape:window-height="834"
-     inkscape:window-x="142"
-     inkscape:window-y="297"
+     inkscape:window-x="42"
+     inkscape:window-y="75"
      inkscape:window-maximized="0">
     <inkscape:grid
        type="xygrid"
@@ -94,7 +94,7 @@
      inkscape:groupmode="layer">
     <path
        sodipodi:type="arc"
-       style="fill:#ffffff;fill-opacity:1;stroke:#777777;stroke-width:1.29999995;stroke-linecap:square;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;fill-opacity:1;stroke:#777777;stroke-width:1.29999994999999990;stroke-linecap:square;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path3151"
        sodipodi:cx="8.1089106"
        sodipodi:cy="8.1613865"

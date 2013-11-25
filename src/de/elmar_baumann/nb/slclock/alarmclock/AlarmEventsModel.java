@@ -62,7 +62,7 @@ public final class AlarmEventsModel {
         return count;
     }
 
-    public synchronized void addToEvents(AlarmEvent event) {
+    public synchronized boolean addToEvents(AlarmEvent event) {
         if (event == null) {
             throw new NullPointerException("event == null");
         }
@@ -70,7 +70,9 @@ public final class AlarmEventsModel {
             scheduleEvent(event);
             saveEvents();
             fireEventsChanged();
+            return true;
         }
+        return false;
     }
 
     private synchronized void scheduleEvent(AlarmEvent event) {

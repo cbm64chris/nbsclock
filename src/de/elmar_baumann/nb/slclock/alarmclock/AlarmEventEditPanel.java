@@ -1,5 +1,6 @@
 package de.elmar_baumann.nb.slclock.alarmclock;
 
+import de.elmar_baumann.nb.slclock.util.Util;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,16 +51,8 @@ public class AlarmEventEditPanel extends javax.swing.JPanel {
     }
 
     private void initComboBoxes() {
-        comboBoxHour.setModel(new DefaultComboBoxModel<>(getTimeUnits(0, 23)));
-        comboBoxMinute.setModel(new DefaultComboBoxModel<>(getTimeUnits(0, 59)));
-    }
-
-    Integer[] getTimeUnits(int min, int max) {
-        Integer[] units = new Integer[max - min + 1];
-        for (int i = min; i <= max; i++) {
-            units[i - min] = i;
-        }
-        return units;
+        comboBoxHour.setModel(new DefaultComboBoxModel<>(Util.createIntRegionArray(0, 23)));
+        comboBoxMinute.setModel(new DefaultComboBoxModel<>(Util.createIntRegionArray(0, 59)));
     }
 
     private void eventToGui() {

@@ -1,4 +1,4 @@
-package de.elmar_baumann.nb.slclock.alarmclock;
+package de.elmar_baumann.nb.slclock.timer;
 
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
@@ -20,21 +20,21 @@ import org.openide.util.NbBundle;
 /**
  * @author Elmar Baumann
  */
-public class AlarmEventsPanel extends javax.swing.JPanel {
+public class TimerEventsPanel extends javax.swing.JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    public AlarmEventsPanel() {
+    public TimerEventsPanel() {
         initComponents();
-        checkBoxShowIcon.setSelected(AlarmEventsModel.getInstance().isShowIcon());
+        checkBoxShowIcon.setSelected(TimerEventsModel.getInstance().isShowIcon());
         addEvents();
     }
 
     private void addEvents() {
         panelEvents.removeAll();
-        List<AlarmEvent> events = new ArrayList<>(AlarmEventsModel.getInstance().getEvents());
-        Collections.sort(events, new AlarmEvent.AlarmEventCmpAsc());
-        for (AlarmEvent event : events) {
+        List<TimerEvent> events = new ArrayList<>(TimerEventsModel.getInstance().getEvents());
+        Collections.sort(events, new TimerEvent.TimerEventCmpAsc());
+        for (TimerEvent event : events) {
             addEvent(event);
         }
         addVerticalFillPanel();
@@ -43,13 +43,13 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
         repaint();
     }
 
-    private void addEvent(AlarmEvent event) {
+    private void addEvent(TimerEvent event) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 1.0;
         gbc.insets = new Insets(5, 5, 0, 5);
-        panelEvents.add(new AlarmEventPanel(event), gbc);
+        panelEvents.add(new TimerEventPanel(event), gbc);
     }
 
     private void addVerticalFillPanel() {
@@ -65,10 +65,10 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            AlarmEventEditPanel alarmEventsEditPanel = new AlarmEventEditPanel();
+            TimerEventEditPanel timerEventsEditPanel = new TimerEventEditPanel();
                 DialogDescriptor dd = new DialogDescriptor(
-                       alarmEventsEditPanel, // innerPane
-                        NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.AddAction.Title"), // title
+                       timerEventsEditPanel, // innerPane
+                        NbBundle.getMessage(TimerEventsPanel.class, "TimerEventsPanel.AddAction.Title"), // title
                         true, // modal
                         new Object[] {DialogDescriptor.OK_OPTION, DialogDescriptor.CANCEL_OPTION}, //options
                         DialogDescriptor.OK_OPTION, // initialValue
@@ -77,23 +77,23 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
                         null //bl
                 );
             if (DialogDisplayer.getDefault().notify(dd) == DialogDescriptor.OK_OPTION) {
-                AlarmEvent event = alarmEventsEditPanel.save();
+                TimerEvent event = timerEventsEditPanel.save();
                 event.setRun(true);
-                boolean added = AlarmEventsModel.getInstance().addToEvents(event);
+                boolean added = TimerEventsModel.getInstance().addToEvents(event);
                 if (!added) {
-                    String message = NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.Notification.NotAdded");
+                    String message = NbBundle.getMessage(TimerEventsModel.class, "TimerEventsPanel.Notification.NotAdded");
                     NotifyDescriptor nd = new NotifyDescriptor.Message(message, NotifyDescriptor.INFORMATION_MESSAGE);
                     DialogDisplayer.getDefault().notify(nd);
+                }
             }
-        }
         }
     };
 
     public void listenToModelChanges(boolean listen) {
         if (listen) {
-            AlarmEventsModel.getInstance().addPropertyChangeListener(modelChangeListener);
+            TimerEventsModel.getInstance().addPropertyChangeListener(modelChangeListener);
         } else {
-            AlarmEventsModel.getInstance().removePropertyChangeListener(modelChangeListener);
+            TimerEventsModel.getInstance().removePropertyChangeListener(modelChangeListener);
         }
     }
 
@@ -104,9 +104,9 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
                 @Override
                 public void run() {
                     String propertyName = evt.getPropertyName();
-                    if (AlarmEventsModel.PROPERTY_EVENTS.equals(propertyName)) {
+                    if (TimerEventsModel.PROPERTY_EVENTS.equals(propertyName)) {
                         addEvents();
-                    } else if (AlarmEventsModel.PROPERTY_SHOW_ICON.equals(propertyName)) {
+                    } else if (TimerEventsModel.PROPERTY_SHOW_ICON.equals(propertyName)) {
                         checkBoxShowIcon.setSelected((boolean) evt.getNewValue());
                     }
                 }
@@ -120,11 +120,12 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
      * always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         panelContent = new javax.swing.JPanel();
-        scrollPaneAlarmEvents = new javax.swing.JScrollPane();
+        scrollPaneEvents = new javax.swing.JScrollPane();
         panelEvents = new javax.swing.JPanel();
         checkBoxShowIcon = new javax.swing.JCheckBox();
         panelButtons = new javax.swing.JPanel();
@@ -134,20 +135,20 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
 
         panelContent.setLayout(new java.awt.GridBagLayout());
 
-        scrollPaneAlarmEvents.setPreferredSize(new java.awt.Dimension(600, 300));
+        scrollPaneEvents.setPreferredSize(new java.awt.Dimension(600, 300));
 
         panelEvents.setPreferredSize(new java.awt.Dimension(300, 200));
         panelEvents.setLayout(new java.awt.GridBagLayout());
-        scrollPaneAlarmEvents.setViewportView(panelEvents);
+        scrollPaneEvents.setViewportView(panelEvents);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        panelContent.add(scrollPaneAlarmEvents, gridBagConstraints);
+        panelContent.add(scrollPaneEvents, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(checkBoxShowIcon, org.openide.util.NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.checkBoxShowIcon.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(checkBoxShowIcon, org.openide.util.NbBundle.getMessage(TimerEventsPanel.class, "TimerEventsPanel.checkBoxShowIcon.text")); // NOI18N
         checkBoxShowIcon.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkBoxShowIconActionPerformed(evt);
@@ -161,7 +162,7 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
         panelButtons.setLayout(new java.awt.GridBagLayout());
 
         buttonAdd.setAction(addAction);
-        org.openide.awt.Mnemonics.setLocalizedText(buttonAdd, org.openide.util.NbBundle.getMessage(AlarmEventsPanel.class, "AlarmEventsPanel.buttonAdd.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(buttonAdd, org.openide.util.NbBundle.getMessage(TimerEventsPanel.class, "TimerEventsPanel.buttonAdd.text")); // NOI18N
         panelButtons.add(buttonAdd, new java.awt.GridBagConstraints());
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -176,10 +177,10 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         add(panelContent, gridBagConstraints);
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
     private void checkBoxShowIconActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxShowIconActionPerformed
-        AlarmEventsModel.getInstance().setShowIcon(checkBoxShowIcon.isSelected());
+        TimerEventsModel.getInstance().setShowIcon(checkBoxShowIcon.isSelected());
     }//GEN-LAST:event_checkBoxShowIconActionPerformed
 
 
@@ -189,7 +190,7 @@ public class AlarmEventsPanel extends javax.swing.JPanel {
     private javax.swing.JPanel panelButtons;
     private javax.swing.JPanel panelContent;
     private javax.swing.JPanel panelEvents;
-    private javax.swing.JScrollPane scrollPaneAlarmEvents;
+    private javax.swing.JScrollPane scrollPaneEvents;
     // End of variables declaration//GEN-END:variables
 
 }

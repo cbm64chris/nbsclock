@@ -1,5 +1,7 @@
 package de.elmar_baumann.nb.slclock.timer;
 
+import java.text.Collator;
+import java.util.Comparator;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -33,6 +35,10 @@ public final class TimerEvent {
         this.displayName = other.displayName;
         this.sound = other.sound;
         this.verbose = other.verbose;
+        this.run = other.run;
+        this.persistent = other.persistent;
+        this.remainingSeconds = other.remainingSeconds;
+        this.startTimeInNanos = other.startTimeInNanos;
     }
 
     /**
@@ -56,7 +62,7 @@ public final class TimerEvent {
     /**
      * @return Default: null
      */
-    @XmlElement(name = "displayName")
+    @XmlElement(name = "displayname")
     public String getDisplayName() {
         return displayName;
     }
@@ -99,6 +105,7 @@ public final class TimerEvent {
         this.persistent = persistent;
     }
 
+    @XmlElement(name = "remainingseconds")
     public long getRemainingSeconds() {
         return remainingSeconds;
     }
@@ -139,47 +146,97 @@ public final class TimerEvent {
             return false;
         }
         TimerEvent other = (TimerEvent) obj;
-        boolean oneDisplayNameIsNullOtherNot =
-                   (displayName == null && other.displayName != null)
-                || (displayName != null && other.displayName == null);
-        return oneDisplayNameIsNullOtherNot
+        boolean oneHasDisplayNameOtherNot =
+                   (hasDisplayName(this) && !hasDisplayName(other))
+                || (!hasDisplayName(this) && hasDisplayName(other));
+        return oneHasDisplayNameOtherNot
                 ? false
-                : displayName != null && other.displayName != null
+                : hasDisplayName(this) && hasDisplayName(other)
                 ? displayName.compareToIgnoreCase(other.displayName) == 0
                 : this.seconds == other.seconds;
     }
 
+    private boolean hasDisplayName(TimerEvent event) {
+        if (event == null) {
+            return false;
+        }
+        String dn = event.getDisplayName();
+        return dn != null && !dn.trim().isEmpty();
+    }
+
     public int getHours() {
+        return getHours(seconds);
+    }
+
+    public static int getHours(int seconds) {
         return seconds / 3600;
     }
 
     public int getMinutesPerHour() {
-        return (seconds - getHours() * 3600) / 60;
+        return getMinutesPerHour(seconds);
+    }
+
+    public static int getMinutesPerHour(int seconds) {
+        return (seconds - getHours(seconds) * 3600) / 60;
     }
 
     public int getSecondsPerMinute() {
-        int spHspM = 3600 * getHours() + 60 * getMinutesPerHour();
+        return getSecondsPerMinute(seconds);
+    }
+
+    public static int getSecondsPerMinute(int seconds) {
+        int spHspM = 3600 * getHours(seconds) + 60 * getMinutesPerHour(seconds);
         return spHspM > 0
                 ? seconds % spHspM
                 : seconds;
     }
 
-    private String getDisplayNameGui() {
-        String name = displayName == null ? "" : displayName;
-        int hours = getHours();
+    public static String formatTimeForGui(int seconds) {
+        int hours = getHours(seconds);
         String hoursString = hours > 0 ? String.format("%02d", hours) : "";
-        int minutesPerHour = getMinutesPerHour();
+        int minutesPerHour = getMinutesPerHour(seconds);
         String minutesString = minutesPerHour > 0 && hours > 0
                 ? String.format(":02d:", minutesPerHour)
                 : minutesPerHour > 0
                 ? String.format("%02d:", minutesPerHour)
                 : "0:";
-        int secondsPerMinute = getSecondsPerMinute();
-        return String.format("%s%s%s%02d", name, hoursString, minutesString, secondsPerMinute);
+        int secondsPerMinute = getSecondsPerMinute(seconds);
+        return String.format("%s%s%02d", hoursString, minutesString, secondsPerMinute);
+    }
+
+    public String getTimeForGui() {
+        return formatTimeForGui(seconds);
+    }
+
+    private String getDisplayNameGui() {
+        String name = displayName == null ? "" : displayName;
+        return name + " " + getTimeForGui();
     }
 
     @Override
     public String toString() {
         return getDisplayNameGui();
+    }
+
+    static class TimerEventCmpAsc implements Comparator<TimerEvent> {
+
+        private final Collator collator = Collator.getInstance();
+
+        @Override
+        public int compare(TimerEvent o1, TimerEvent o2) {
+            String displayName1 = o1.getDisplayName();
+            String displayName2 = o2.getDisplayName();
+            return displayName1 != null && displayName2 != null
+                    ? collator.compare(displayName1, displayName2)
+                    : displayName1 != null && displayName2 == null
+                    ? 1
+                    : displayName1 == null && displayName2 != null
+                    ? -1
+                    : o1.seconds == o2.seconds
+                    ? 0
+                    : o1.seconds > o2.seconds
+                    ? 1
+                    : -1;
+}
     }
 }

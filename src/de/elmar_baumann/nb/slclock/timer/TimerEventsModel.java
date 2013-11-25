@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import org.netbeans.api.annotations.common.StaticResource;
+import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.NotificationDisplayer;
@@ -32,6 +33,7 @@ public final class TimerEventsModel {
 
     public static final String PROPERTY_EVENTS = "events";
     public static final String PROPERTY_SHOW_ICON = "showIcon";
+    public static final String PROPERTY_TIME = "time";
     private static final String KEY_SHOW_ICON = "TimerEventsModel.ShowIcon";
     private final Map<TimerEvent, Future<?>> futuresOfEvents = new HashMap<>();
     private final TimerEventsRepository repository = new TimerEventsRepository();
@@ -40,6 +42,28 @@ public final class TimerEventsModel {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(threadFactory);
     private static TimerEventsModel instance;
     private boolean showIcon = NbPreferences.forModule(TimerEventsModel.class).getBoolean(KEY_SHOW_ICON, true);
+
+    /**
+     * Delivered through {@link #PROPERTY_TIME}
+     */
+    public static final class TimerScheduleEvent {
+
+        private final TimerEvent event;
+        private final long remainingSeconds;
+
+        private TimerScheduleEvent(TimerEvent event, long remainingSeconds) {
+            this.event = event;
+            this.remainingSeconds = remainingSeconds;
+        }
+
+        public TimerEvent getEvent() {
+            return event;
+        }
+
+        public long getRemainingSeconds() {
+            return remainingSeconds;
+        }
+    }
 
     public static synchronized TimerEventsModel getInstance() {
         if (instance == null) {
@@ -62,19 +86,21 @@ public final class TimerEventsModel {
         return count;
     }
 
-    public synchronized void addToEvents(TimerEvent event) {
+    public synchronized boolean addToEvents(TimerEvent event) {
         if (event == null) {
             throw new NullPointerException("event == null");
         }
         if (!futuresOfEvents.containsKey(event)) {
-            saveEvents();
             if (event.isRun()) {
                 scheduleEvent(event);
             } else {
                 futuresOfEvents.put(event, null);
             }
+            saveEvents();
             fireEventsChanged();
+            return true;
         }
+        return false;
     }
 
     public synchronized void clear() {
@@ -89,6 +115,9 @@ public final class TimerEventsModel {
     }
 
     private synchronized void scheduleEvent(TimerEvent event) {
+        if (event.getRemainingSeconds() == 0) {
+            event.setRemainingSeconds(event.getSeconds());
+        }
         event.setStartTimeInNanos(System.nanoTime());
         Future<?> future = scheduler.scheduleWithFixedDelay(
                 new TimerEventRunnable(event),
@@ -132,16 +161,37 @@ public final class TimerEventsModel {
         }
     }
 
-    public synchronized void setRun(TimerEvent event, boolean run) {
+    public synchronized void setPause(TimerEvent event, boolean pause) {
         if (event == null) {
             throw new NullPointerException("event == null");
         }
+        setRun(event, pause, false);
+    }
+
+    public synchronized void setStop(TimerEvent event) {
+        if (event == null) {
+            throw new NullPointerException("event == null");
+        }
+        setRun(event, false, true);
+    }
+
+    private synchronized void setRun(TimerEvent event, boolean run, boolean stop) {
         TimerEvent e = findEvent(event);
-        if (e != null && run != e.isRun()) {
+        if (e != null) {
             e.setRun(run);
-            if (run) {
+            Future<?> future = futuresOfEvents.get(e);
+            if (future == null) {
                 scheduleEvent(event);
             } else {
+                if (stop) {
+                    event.setRemainingSeconds(event.getSeconds());
+                } else {
+                    long scheduledSeconds = (System.nanoTime() - e.getStartTimeInNanos()) / 1_000_000_000;
+                    long remainingSeconds = e.getRemainingSeconds();
+                    if (remainingSeconds > scheduledSeconds) {
+                        e.setRemainingSeconds(remainingSeconds - scheduledSeconds);
+                    }
+                }
                 unscheduleEvent(event);
             }
             fireEventsChanged();
@@ -187,8 +237,13 @@ public final class TimerEventsModel {
 
         @Override
         public void run() {
-            event.setRemainingSeconds((System.nanoTime() - event.getStartTimeInNanos()) * 1_000_000_000);
-            if (event.getRemainingSeconds() < 1) {
+            long eventRemainingSeconds = event.getRemainingSeconds();
+            long secondsSinceStartTime = (System.nanoTime() - event.getStartTimeInNanos()) / 1_000_000_000;
+            long timerRemainingSeconds = eventRemainingSeconds - secondsSinceStartTime;
+            synchronized (TimerEventsModel.this) {
+                pcs.firePropertyChange(PROPERTY_TIME, null, new TimerScheduleEvent(event, timerRemainingSeconds));
+            }
+            if (timerRemainingSeconds < 1) {
                 notifyTimer();
                 synchronized (TimerEventsModel.this) {
                     if (event.isPersistent()) {
@@ -225,20 +280,20 @@ public final class TimerEventsModel {
     }
 
     public void showSettingsGui() {
-//        TimerEventsPanel alarmEventsPanel = new TimerEventsPanel();
-//        alarmEventsPanel.listenToModelChanges(true);
-//        DialogDescriptor dd = new DialogDescriptor(
-//                alarmEventsPanel, // innerPane
-//                NbBundle.getMessage(TimerClockPanel.class, "TimerClockPanel.PreferencesDialog.Title"), // title
-//                true, // modal
-//                new Object[]{DialogDescriptor.OK_OPTION}, //options
-//                DialogDescriptor.OK_OPTION, // initialValue
-//                DialogDescriptor.DEFAULT_ALIGN, // optionsAlign
-//                null, // helpCtx
-//                null //bl
-//        );
-//        DialogDisplayer.getDefault().notify(dd);
-//        alarmEventsPanel.listenToModelChanges(false);
+        TimerEventsPanel timerEventsPanel = new TimerEventsPanel();
+        timerEventsPanel.listenToModelChanges(true);
+        DialogDescriptor dd = new DialogDescriptor(
+                timerEventsPanel, // innerPane
+                NbBundle.getMessage(TimerEventsModel.class, "TimerEventsModel.PreferencesDialog.Title"), // title
+                true, // modal
+                new Object[]{DialogDescriptor.OK_OPTION}, //options
+                DialogDescriptor.OK_OPTION, // initialValue
+                DialogDescriptor.DEFAULT_ALIGN, // optionsAlign
+                null, // helpCtx
+                null //bl
+        );
+        DialogDisplayer.getDefault().notify(dd);
+        timerEventsPanel.listenToModelChanges(false);
     }
 
     private synchronized void fireEventsChanged() {
