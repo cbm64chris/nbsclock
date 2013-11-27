@@ -1,4 +1,4 @@
-package de.elmar_baumann.nb.slclock.timer;
+package de.elmar_baumann.nb.slclock.alarmclock;
 
 import java.awt.EventQueue;
 import java.awt.event.MouseAdapter;
@@ -14,27 +14,27 @@ import org.openide.util.ImageUtilities;
 /**
  * @author Elmar Baumann
  */
-public class TimerPanel extends javax.swing.JPanel {
+public class AlarmClockDisplayPanel extends javax.swing.JPanel {
 
     private static final long serialVersionUID = 1L;
-    @StaticResource private static final String ICON_PATH_TIMER_RUNS = "de/elmar_baumann/nb/slclock/icons/timer-runs.png";
-    @StaticResource private static final String ICON_PATH_TIMER_PAUSES = "de/elmar_baumann/nb/slclock/icons/timer-pauses.png";
-    private static final Icon ICON_TIMER_RUNS = ImageUtilities.loadImageIcon(ICON_PATH_TIMER_RUNS, false);
-    private static final Icon ICON_TIMER_PAUSES = ImageUtilities.loadImageIcon(ICON_PATH_TIMER_PAUSES, false);
+    @StaticResource private static final String ICON_PATH_ALARM_RUNS = "de/elmar_baumann/nb/slclock/icons/alarm-runs.png";
+    @StaticResource private static final String ICON_PATH_ALARM_PAUSES = "de/elmar_baumann/nb/slclock/icons/alarm-pauses.png";
+    private static final Icon ICON_ALARM_RUNS = ImageUtilities.loadImageIcon(ICON_PATH_ALARM_RUNS, false);
+    private static final Icon ICON_ALARM_PAUSES = ImageUtilities.loadImageIcon(ICON_PATH_ALARM_PAUSES, false);
 
-    public TimerPanel() {
+    public AlarmClockDisplayPanel() {
         initComponents();
         setIcon();
         addMouseListener(preferencesDialogDisplayer);
-        TimerEventsModel.getInstance().addPropertyChangeListener(iconUpdater);
-        labelTimer.addMouseListener(preferencesDialogDisplayer);
-        labelTimer.setVisible(TimerEventsModel.getInstance().isShowIcon());
+        AlarmEventsModel.getInstance().addPropertyChangeListener(iconUpdater);
+        labelAlarmClock.addMouseListener(preferencesDialogDisplayer);
+        setVisible(AlarmEventsModel.getInstance().isShowIcon());
     }
 
     private void setIcon() {
-        labelTimer.setIcon(TimerEventsModel.getInstance().getRunningEventsCount() > 0
-                ? ICON_TIMER_RUNS
-                : ICON_TIMER_PAUSES);
+        labelAlarmClock.setIcon(AlarmEventsModel.getInstance().getRunningEventsCount() > 0
+                ? ICON_ALARM_RUNS
+                : ICON_ALARM_PAUSES);
     }
 
     private final PropertyChangeListener iconUpdater = new PropertyChangeListener() {
@@ -44,10 +44,10 @@ public class TimerPanel extends javax.swing.JPanel {
                 @Override
                 public void run() {
                     String propertyName = evt.getPropertyName();
-                    if (TimerEventsModel.PROPERTY_EVENTS.equals(propertyName)) {
+                    if (AlarmEventsModel.PROPERTY_EVENTS.equals(propertyName)) {
                         setIcon();
-                    } else if (TimerEventsModel.PROPERTY_SHOW_ICON.equals(propertyName)) {
-                        labelTimer.setVisible((boolean) evt.getNewValue());
+                    } else if (AlarmEventsModel.PROPERTY_SHOW_ICON.equals(propertyName)) {
+                        setVisible((boolean) evt.getNewValue());
                     }
                 }
             });
@@ -59,7 +59,7 @@ public class TimerPanel extends javax.swing.JPanel {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (SwingUtilities.isLeftMouseButton(e)) {
-                TimerEventsModel.getInstance().showSettingsGui();
+                AlarmEventsModel.getInstance().showSettingsGui();
             }
         }
     };
@@ -73,17 +73,17 @@ public class TimerPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        labelTimer = new javax.swing.JLabel();
+        labelAlarmClock = new javax.swing.JLabel();
 
         setLayout(new java.awt.GridBagLayout());
 
-        labelTimer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/elmar_baumann/nb/slclock/icons/timer-pauses.png"))); // NOI18N
-        add(labelTimer, new java.awt.GridBagConstraints());
+        labelAlarmClock.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/elmar_baumann/nb/slclock/icons/alarm-pauses.png"))); // NOI18N
+        add(labelAlarmClock, new java.awt.GridBagConstraints());
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel labelTimer;
+    private javax.swing.JLabel labelAlarmClock;
     // End of variables declaration//GEN-END:variables
 
 }

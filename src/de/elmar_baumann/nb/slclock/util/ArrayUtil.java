@@ -3,7 +3,7 @@ package de.elmar_baumann.nb.slclock.util;
 /**
  * @author Elmar Baumann
  */
-public final class Util {
+public final class ArrayUtil {
 
     public static Integer[] createIntRegionArray(int from, int to) {
         if (from > to) {
@@ -16,6 +16,6 @@ public final class Util {
         return values;
     }
 
-    private Util() {
+    private ArrayUtil() {
     }
 }

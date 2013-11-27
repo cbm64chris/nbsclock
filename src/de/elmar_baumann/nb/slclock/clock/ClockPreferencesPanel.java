@@ -1,7 +1,9 @@
 package de.elmar_baumann.nb.slclock.clock;
 
 import de.elmar_baumann.nb.slclock.alarmclock.AlarmEventsModel;
+import de.elmar_baumann.nb.slclock.stopwatch.StopwatchDisplayPanel;
 import de.elmar_baumann.nb.slclock.timer.TimerEventsModel;
+import de.elmar_baumann.nb.slclock.util.PropertyChangeNotifier;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
@@ -11,6 +13,7 @@ import java.util.List;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
 
 /**
  * @author Elmar Baumann
@@ -27,6 +30,7 @@ public class ClockPreferencesPanel extends javax.swing.JPanel implements Propert
     }
 
     private void postInitComponents() {
+        checkBoxShowStopWatchIcon.setSelected(NbPreferences.forModule(StopwatchDisplayPanel.class).getBoolean(StopwatchDisplayPanel.KEY_SHOW_ICON, true));
         setInfoCustomPattern();
         restoreFormat();
         showExample();
@@ -171,6 +175,7 @@ public class ClockPreferencesPanel extends javax.swing.JPanel implements Propert
         labelInfoCustomPattern = new javax.swing.JLabel();
         panelExample = new javax.swing.JPanel();
         labelExample = new javax.swing.JLabel();
+        checkBoxShowStopWatchIcon = new javax.swing.JCheckBox();
         panelButtons = new javax.swing.JPanel();
         buttonShowAlarmSettingsGui = new javax.swing.JButton();
         buttonShowTimerSettingsGui = new javax.swing.JButton();
@@ -234,6 +239,18 @@ public class ClockPreferencesPanel extends javax.swing.JPanel implements Propert
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         panelContent.add(panelExample, gridBagConstraints);
 
+        org.openide.awt.Mnemonics.setLocalizedText(checkBoxShowStopWatchIcon, org.openide.util.NbBundle.getBundle(ClockPreferencesPanel.class).getString("ClockPreferencesPanel.checkBoxShowStopWatchIcon.text")); // NOI18N
+        checkBoxShowStopWatchIcon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkBoxShowStopWatchIconActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        panelContent.add(checkBoxShowStopWatchIcon, gridBagConstraints);
+
         panelButtons.setLayout(new java.awt.GridBagLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(buttonShowAlarmSettingsGui, org.openide.util.NbBundle.getMessage(ClockPreferencesPanel.class, "ClockPreferencesPanel.buttonShowAlarmSettingsGui.text")); // NOI18N
@@ -270,6 +287,7 @@ public class ClockPreferencesPanel extends javax.swing.JPanel implements Propert
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         panelButtons.add(buttonApply, gridBagConstraints);
@@ -306,12 +324,18 @@ public class ClockPreferencesPanel extends javax.swing.JPanel implements Propert
         TimerEventsModel.getInstance().showSettingsGui();
     }//GEN-LAST:event_buttonShowTimerSettingsGuiActionPerformed
 
+    private void checkBoxShowStopWatchIconActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxShowStopWatchIconActionPerformed
+        boolean show = checkBoxShowStopWatchIcon.isSelected();
+        PropertyChangeNotifier.INSTANCE.firePropertyChange(PropertyChangeNotifier.PROPERTY_SHOW_STOPWATCH_ICON, !show, show);
+    }//GEN-LAST:event_checkBoxShowStopWatchIconActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonApply;
     private javax.swing.ButtonGroup buttonGroupPatterns;
     private javax.swing.JButton buttonReset;
     private javax.swing.JButton buttonShowAlarmSettingsGui;
     private javax.swing.JButton buttonShowTimerSettingsGui;
+    private javax.swing.JCheckBox checkBoxShowStopWatchIcon;
     private javax.swing.JLabel labelExample;
     private javax.swing.JLabel labelInfoCustomPattern;
     private javax.swing.JPanel panelButtons;

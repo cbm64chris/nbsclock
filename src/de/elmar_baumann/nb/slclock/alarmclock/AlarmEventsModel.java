@@ -206,7 +206,7 @@ public final class AlarmEventsModel {
         alarmEventsPanel.listenToModelChanges(true);
         DialogDescriptor dd = new DialogDescriptor(
                 alarmEventsPanel, // innerPane
-                NbBundle.getMessage(AlarmClockPanel.class, "AlarmClockPanel.PreferencesDialog.Title"), // title
+                NbBundle.getMessage(AlarmClockDisplayPanel.class, "AlarmClockPanel.PreferencesDialog.Title"), // title
                 true, // modal
                 new Object[]{DialogDescriptor.OK_OPTION}, //options
                 DialogDescriptor.OK_OPTION, // initialValue

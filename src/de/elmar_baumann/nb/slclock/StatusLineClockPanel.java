@@ -23,8 +23,9 @@ public class StatusLineClockPanel extends javax.swing.JPanel {
 
         separator = new javax.swing.JSeparator();
         panelClock = new de.elmar_baumann.nb.slclock.clock.ClockPanel();
-        panelAlarmClock = new de.elmar_baumann.nb.slclock.alarmclock.AlarmClockPanel();
-        panelTimer = new de.elmar_baumann.nb.slclock.timer.TimerPanel();
+        panelAlarmClock = new de.elmar_baumann.nb.slclock.alarmclock.AlarmClockDisplayPanel();
+        panelTimer = new de.elmar_baumann.nb.slclock.timer.TimerDisplayPanel();
+        panelStopwatch = new de.elmar_baumann.nb.slclock.stopwatch.StopwatchDisplayPanel();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -46,13 +47,17 @@ public class StatusLineClockPanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(0, 7, 0, 0);
         add(panelTimer, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        add(panelStopwatch, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private de.elmar_baumann.nb.slclock.alarmclock.AlarmClockPanel panelAlarmClock;
+    private de.elmar_baumann.nb.slclock.alarmclock.AlarmClockDisplayPanel panelAlarmClock;
     private de.elmar_baumann.nb.slclock.clock.ClockPanel panelClock;
-    private de.elmar_baumann.nb.slclock.timer.TimerPanel panelTimer;
+    private de.elmar_baumann.nb.slclock.stopwatch.StopwatchDisplayPanel panelStopwatch;
+    private de.elmar_baumann.nb.slclock.timer.TimerDisplayPanel panelTimer;
     private javax.swing.JSeparator separator;
     // End of variables declaration//GEN-END:variables
 

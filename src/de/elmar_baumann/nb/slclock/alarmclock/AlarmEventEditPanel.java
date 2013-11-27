@@ -1,6 +1,6 @@
 package de.elmar_baumann.nb.slclock.alarmclock;
 
-import de.elmar_baumann.nb.slclock.util.Util;
+import de.elmar_baumann.nb.slclock.util.ArrayUtil;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,8 +51,8 @@ public class AlarmEventEditPanel extends javax.swing.JPanel {
     }
 
     private void initComboBoxes() {
-        comboBoxHour.setModel(new DefaultComboBoxModel<>(Util.createIntRegionArray(0, 23)));
-        comboBoxMinute.setModel(new DefaultComboBoxModel<>(Util.createIntRegionArray(0, 59)));
+        comboBoxHour.setModel(new DefaultComboBoxModel<>(ArrayUtil.createIntRegionArray(0, 23)));
+        comboBoxMinute.setModel(new DefaultComboBoxModel<>(ArrayUtil.createIntRegionArray(0, 59)));
     }
 
     private void eventToGui() {

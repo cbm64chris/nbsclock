@@ -1,5 +1,6 @@
 package de.elmar_baumann.nb.slclock.timer;
 
+import de.elmar_baumann.nb.slclock.util.TimeUtil;
 import java.text.Collator;
 import java.util.Comparator;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -165,42 +166,27 @@ public final class TimerEvent {
     }
 
     public int getHours() {
-        return getHours(seconds);
-    }
-
-    public static int getHours(int seconds) {
-        return seconds / 3600;
+        return TimeUtil.getHoursOfSeconds(seconds);
     }
 
     public int getMinutesPerHour() {
-        return getMinutesPerHour(seconds);
-    }
-
-    public static int getMinutesPerHour(int seconds) {
-        return (seconds - getHours(seconds) * 3600) / 60;
+        return TimeUtil.getMinutesPerHourOfSeconds(seconds);
     }
 
     public int getSecondsPerMinute() {
-        return getSecondsPerMinute(seconds);
-    }
-
-    public static int getSecondsPerMinute(int seconds) {
-        int spHspM = 3600 * getHours(seconds) + 60 * getMinutesPerHour(seconds);
-        return spHspM > 0
-                ? seconds % spHspM
-                : seconds;
+        return TimeUtil.getSecondsPerMinuteOfSeconds(seconds);
     }
 
     public static String formatTimeForGui(int seconds) {
-        int hours = getHours(seconds);
+        int hours = TimeUtil.getHoursOfSeconds(seconds);
         String hoursString = hours > 0 ? String.format("%02d", hours) : "";
-        int minutesPerHour = getMinutesPerHour(seconds);
+        int minutesPerHour = TimeUtil.getMinutesPerHourOfSeconds(seconds);
         String minutesString = minutesPerHour > 0 && hours > 0
                 ? String.format(":02d:", minutesPerHour)
                 : minutesPerHour > 0
                 ? String.format("%02d:", minutesPerHour)
                 : "0:";
-        int secondsPerMinute = getSecondsPerMinute(seconds);
+        int secondsPerMinute = TimeUtil.getSecondsPerMinuteOfSeconds(seconds);
         return String.format("%s%s%02d", hoursString, minutesString, secondsPerMinute);
     }
 

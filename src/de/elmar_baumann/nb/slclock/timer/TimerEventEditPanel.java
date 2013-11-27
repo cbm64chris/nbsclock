@@ -1,6 +1,6 @@
 package de.elmar_baumann.nb.slclock.timer;
 
-import de.elmar_baumann.nb.slclock.util.Util;
+import de.elmar_baumann.nb.slclock.util.ArrayUtil;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.DefaultComboBoxModel;
@@ -14,6 +14,7 @@ import javax.swing.event.ChangeListener;
  */
 public class TimerEventEditPanel extends javax.swing.JPanel {
 
+    private static final long serialVersionUID = 1L;
     private final TimerEvent event;
 
     public TimerEventEditPanel() {
@@ -26,9 +27,9 @@ public class TimerEventEditPanel extends javax.swing.JPanel {
         }
         this.event = event;
         initComponents();
-        comboBoxHours.setModel(new DefaultComboBoxModel<>(Util.createIntRegionArray(0, 24)));
-        comboBoxMinutes.setModel(new DefaultComboBoxModel<>(Util.createIntRegionArray(0, 59)));
-        comboBoxSeconds.setModel(new DefaultComboBoxModel<>(Util.createIntRegionArray(0, 59)));
+        comboBoxHours.setModel(new DefaultComboBoxModel<>(ArrayUtil.createIntRegionArray(0, 24)));
+        comboBoxMinutes.setModel(new DefaultComboBoxModel<>(ArrayUtil.createIntRegionArray(0, 59)));
+        comboBoxSeconds.setModel(new DefaultComboBoxModel<>(ArrayUtil.createIntRegionArray(0, 59)));
         eventToGui();
         sliderHours.addChangeListener(new SliderChangeListener(comboBoxHours));
         sliderMinutes.addChangeListener(new SliderChangeListener(comboBoxMinutes));
