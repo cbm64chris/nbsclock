@@ -37,4 +37,15 @@ public final class AlarmEvents {
         }
         this.events = new ArrayList<>(events);
     }
+
+    public AlarmEvents getPersistentEvents() {
+        AlarmEvents evts = new AlarmEvents();
+        evts.events.addAll(events);
+        for (AlarmEvent event : events) {
+            if (event.isTemporary()) {
+                evts.events.remove(event);
+            }
+        }
+        return evts;
+    }
 }

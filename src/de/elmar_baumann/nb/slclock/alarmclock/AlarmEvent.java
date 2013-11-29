@@ -28,6 +28,7 @@ public final class AlarmEvent {
     private boolean run;
     private boolean sound;
     private boolean verbose;
+    private boolean temporary;
 
     public AlarmEvent() {
         this(0, 0);
@@ -73,6 +74,14 @@ public final class AlarmEvent {
         this.minute = minute;
     }
 
+    public boolean isTemporary() {
+        return temporary;
+    }
+
+    public void setTemporary(boolean temporary) {
+        this.temporary = temporary;
+    }
+
     @XmlElement(name = "dayofweek")
     public synchronized Collection<DayOfWeek> getDaysOfWeek() {
         return daysOfWeek; // JAXB: modifiable
@@ -97,10 +106,10 @@ public final class AlarmEvent {
         cal.setTimeInMillis(timeInMillis);
         int calHour = cal.get(Calendar.HOUR_OF_DAY);
         int calMinute = cal.get(Calendar.MINUTE);
-        final boolean hourAnMinuteEquals = hour == calHour && minute == calMinute;
+        boolean hourAndMinuteEquals = hour == calHour && minute == calMinute;
         return isRepeatable()
-                ? hourAnMinuteEquals && containsDayOfWeek(timeInMillis)
-                : hourAnMinuteEquals;
+                ? hourAndMinuteEquals && containsDayOfWeek(timeInMillis)
+                : hourAndMinuteEquals;
     }
 
     private synchronized boolean containsDayOfWeek(long timeInMillis) {
@@ -167,10 +176,8 @@ public final class AlarmEvent {
 
     @Override
     public synchronized String toString() {
-        String dn = getDisplayName();
-        return getTimeForGui() + dn == null
-                ? ""
-                : dn;
+        String nonNullDisplayName = displayName == null ? "" : " " + displayName;
+        return getTimeForGui() + nonNullDisplayName;
     }
 
     @Override

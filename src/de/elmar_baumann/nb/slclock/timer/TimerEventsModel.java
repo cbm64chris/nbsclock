@@ -260,22 +260,23 @@ public final class TimerEventsModel {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                    if (event.isSound()) {
+                        Toolkit.getDefaultToolkit().beep();
+                    }
+                    String message = NbBundle.getMessage(TimerEventRunnable.class, "TimerEventRunnable.Notification.Details", event);
                     NotificationDisplayer.getDefault().notify(
-                            NbBundle.getMessage(TimerEventRunnable.class, "TimerEventRunnable.Notification.Title"),
+                            message, // title
                             ImageUtilities.loadImageIcon(ICON_PATH_TIMER_RUNS, false),
-                            NbBundle.getMessage(TimerEventRunnable.class, "TimerEventRunnable.Notification.Details", event),
+                            message,
                             null // detailsAction
                     );
                     if (event.isVerbose()) {
-                        String message = NbBundle.getMessage(TimerEventRunnable.class, "TimerEventRunnable.Notification.Verbose", event);
+                        message = NbBundle.getMessage(TimerEventRunnable.class, "TimerEventRunnable.Notification.Verbose", event);
                         NotifyDescriptor nd = new NotifyDescriptor.Message(message, NotifyDescriptor.INFORMATION_MESSAGE);
                         DialogDisplayer.getDefault().notify(nd);
                     }
                 }
             });
-            if (event.isSound()) {
-                Toolkit.getDefaultToolkit().beep();
-            }
         }
     }
 
