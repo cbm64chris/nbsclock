@@ -36,7 +36,7 @@ public final class ClockPreferences {
                 if (dateFormatSelection == DateFormatSelection.CUSTOM_PATTERN) {
                     String pattern = prefs.get(KEY_DATE_FORMAT_PATTERN_PREFIX + i, "");
                     array.addDateFormat(new SimpleDateFormat(pattern), delimiter);
-                } else {
+                } else if (dateFormatSelection != DateFormatSelection.NONE) {
                     array.addDateFormat(dateFormatSelection.getDateFormat(), delimiter);
                 }
             }

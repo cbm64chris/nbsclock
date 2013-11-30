@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
 
 /**
@@ -56,9 +57,20 @@ public class ClockPanel extends javax.swing.JPanel {
                         null //bl
                 );
                 DialogDisplayer.getDefault().notify(dd);
+                checkChanged(clockPreferencesPanel);
             }
         }
     };
+
+    private void checkChanged(ClockPreferencesPanel clockPreferencesPanel) {
+        if (clockPreferencesPanel.isChanged()) {
+            String message = NbBundle.getMessage(ClockPanel.class, "ClockPanel.Confirm.ApplyChanges");
+            NotifyDescriptor nd = new NotifyDescriptor.Confirmation(message, NotifyDescriptor.YES_NO_OPTION);
+            if (DialogDisplayer.getDefault().notify(nd) == NotifyDescriptor.YES_OPTION) {
+                clockPreferencesPanel.persistFormat();
+            }
+        }
+    }
 
     private class ClockLabelUpdater implements Runnable, ClockPreferencesListener {
 
