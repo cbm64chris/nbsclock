@@ -32,6 +32,7 @@ public class AlarmEventPanel extends javax.swing.JPanel {
     private void eventToGui() {
         labelTime.setText(event.getTimeForGui());
         labelDisplayName.setText(event.getDisplayName() == null ? "" : event.getDisplayName());
+        buttonEdit.setEnabled(!event.isTemporary());
         setButtonIcon();
     }
 
@@ -67,7 +68,7 @@ public class AlarmEventPanel extends javax.swing.JPanel {
     }
 
     private void deleteEvent() {
-        String msg = NbBundle.getMessage(AlarmEventPanel.class, "AlarmEventPanel.Delete.Confirm", event.getDisplayName());
+        String msg = NbBundle.getMessage(AlarmEventPanel.class, "AlarmEventPanel.Delete.Confirm", event);
         NotifyDescriptor nd = new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION);
         if (DialogDisplayer.getDefault().notify(nd) == NotifyDescriptor.YES_OPTION) {
             AlarmEventsModel.getInstance().removeFromEvents(event);

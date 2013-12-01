@@ -20,7 +20,7 @@ public final class AlarmEventsRepository {
         }
         StringWriter sw = new StringWriter();
         try {
-            JAXB.marshal(events, sw);
+            JAXB.marshal(events.getPersistentEvents(), sw);
         } finally {
             IoUtil.close(sw);
         }

@@ -84,6 +84,34 @@ public final class AlarmEventsModel {
         futuresOfEvents.put(event, future);
     }
 
+    /**
+     * @param event
+     * @param snoozeTimeInMinutes greater equals 0; does nothing if 0
+     */
+    public synchronized void snoozeEvent(AlarmEvent event, int snoozeTimeInMinutes) {
+        if (event == null) {
+            throw new NullPointerException("event == null");
+        }
+        if (snoozeTimeInMinutes < 0) {
+            throw new IllegalArgumentException("Negative snooze time: "  + snoozeTimeInMinutes);
+        }
+        if (snoozeTimeInMinutes == 0) {
+            return;
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MINUTE, snoozeTimeInMinutes);
+        AlarmEvent snoozeEvent = new AlarmEvent();
+        snoozeEvent.setDisplayName(event.getDisplayName());
+        snoozeEvent.setHour(cal.get(Calendar.HOUR_OF_DAY));
+        snoozeEvent.setMinute(cal.get(Calendar.MINUTE));
+        snoozeEvent.setSound(event.isSound());
+        snoozeEvent.setVerbose(event.isVerbose());
+        snoozeEvent.setRun(true);
+        snoozeEvent.setTemporary(true);
+        scheduleEvent(snoozeEvent);
+        fireEventsChanged();
+    }
+
     private synchronized long getInitialDelayInSeconds() {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(System.currentTimeMillis());
@@ -172,9 +200,9 @@ public final class AlarmEventsModel {
         public void run() {
             if (event.isAlarm(System.currentTimeMillis())) {
                 notifyAlarm();
-                if (!event.isRepeatable()) {
-                    removeFromEvents(event);
-                }
+                    if (!event.isRepeatable()) {
+                        removeFromEvents(event);
+                    }
             }
         }
 
@@ -182,22 +210,24 @@ public final class AlarmEventsModel {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                    if (event.isSound()) {
+                        Toolkit.getDefaultToolkit().beep();
+                    }
                     NotificationDisplayer.getDefault().notify(
-                            NbBundle.getMessage(AlarmEventRunnable.class, "AlarmEventRunnable.Notification.Title"),
+                            NbBundle.getMessage(AlarmEventRunnable.class, "AlarmEventRunnable.Notification.Title", event),
                             ImageUtilities.loadImageIcon(ICON_PATH_ALARM_RUNS, false),
                             NbBundle.getMessage(AlarmEventRunnable.class, "AlarmEventRunnable.Notification.Details", event),
-                            null // detailsAction
+                            new AlarmEventSnoozeAction(event) // detailsAction
                     );
                     if (event.isVerbose()) {
-                        String message = NbBundle.getMessage(AlarmEventRunnable.class, "AlarmEventRunnable.Notification.Verbose", event);
-                        NotifyDescriptor nd = new NotifyDescriptor.Message(message, NotifyDescriptor.INFORMATION_MESSAGE);
+                        AlarmEventSnoozeTimePanel panel = new AlarmEventSnoozeTimePanel(NbBundle.getMessage(AlarmEventRunnable.class, "AlarmEventRunnable.EventDisplayName", event));
+                        panel.setSnoozeTimeInMinutes(0);
+                        NotifyDescriptor nd = new NotifyDescriptor.Message(panel, NotifyDescriptor.INFORMATION_MESSAGE);
                         DialogDisplayer.getDefault().notify(nd);
+                        snoozeEvent(event, panel.getSnoozeTimeInMinutes());
                     }
                 }
             });
-            if (event.isSound()) {
-                Toolkit.getDefaultToolkit().beep();
-            }
         }
     }
 

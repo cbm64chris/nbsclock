@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Elmar Baumann
@@ -36,8 +38,15 @@ final class DateFormatArray {
     String format(Date date) {
         StringBuilder sb = new StringBuilder();
         for (DateFormatAndDelimiter formatter : formatters) {
-            sb.append(formatter.delimiter);
-            sb.append(formatter.dateFormat.format(date));
+            if (formatter != null && formatter.dateFormat != null && formatter.delimiter != null) {
+                sb.append(formatter.delimiter);
+                try {
+                    sb.append(formatter.dateFormat.format(date));
+                } catch (Throwable t) {
+                    Logger.getLogger(DateFormatArray.class.getName()).log(Level.SEVERE, null, t);
+                    sb.append("?");
+                }
+            }
         }
         return sb.toString();
     }
