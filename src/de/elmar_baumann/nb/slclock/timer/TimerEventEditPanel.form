@@ -102,7 +102,7 @@
           <ComponentRef name="textFieldDisplayName"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/elmar_baumann/nb/slclock/timer/Bundle.properties" key="TimerEventEditPanel.labelDisplayName.text" replaceFormat="org.openide.util.NbBundle.getBundle({sourceFileName}.class).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="de/elmar_baumann/nb/slclock/timer/Bundle.properties" key="TimerEventEditPanel.labelDisplayName.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -117,7 +117,7 @@
           <ComponentRef name="comboBoxHours"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/elmar_baumann/nb/slclock/timer/Bundle.properties" key="TimerEventEditPanel.labelHours.text" replaceFormat="org.openide.util.NbBundle.getBundle({sourceFileName}.class).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="de/elmar_baumann/nb/slclock/timer/Bundle.properties" key="TimerEventEditPanel.labelHours.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -138,7 +138,7 @@
           <ComponentRef name="comboBoxMinutes"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/elmar_baumann/nb/slclock/timer/Bundle.properties" key="TimerEventEditPanel.labelMinutes.text" replaceFormat="org.openide.util.NbBundle.getBundle({sourceFileName}.class).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="de/elmar_baumann/nb/slclock/timer/Bundle.properties" key="TimerEventEditPanel.labelMinutes.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -159,7 +159,7 @@
           <ComponentRef name="comboBoxSeconds"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/elmar_baumann/nb/slclock/timer/Bundle.properties" key="TimerEventEditPanel.labelSeconds.text" replaceFormat="org.openide.util.NbBundle.getBundle({sourceFileName}.class).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="de/elmar_baumann/nb/slclock/timer/Bundle.properties" key="TimerEventEditPanel.labelSeconds.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -177,7 +177,7 @@
     <Component class="javax.swing.JCheckBox" name="checkBoxPersistent">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/elmar_baumann/nb/slclock/timer/Bundle.properties" key="TimerEventEditPanel.checkBoxPersistent.text" replaceFormat="org.openide.util.NbBundle.getBundle({sourceFileName}.class).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="de/elmar_baumann/nb/slclock/timer/Bundle.properties" key="TimerEventEditPanel.checkBoxPersistent.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>

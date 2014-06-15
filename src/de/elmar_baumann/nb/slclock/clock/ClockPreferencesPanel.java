@@ -249,7 +249,7 @@ public class ClockPreferencesPanel extends javax.swing.JPanel implements Propert
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         panelContent.add(panelExample, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(checkBoxShowStopWatchIcon, org.openide.util.NbBundle.getBundle(ClockPreferencesPanel.class).getString("ClockPreferencesPanel.checkBoxShowStopWatchIcon.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(checkBoxShowStopWatchIcon, org.openide.util.NbBundle.getMessage(ClockPreferencesPanel.class, "ClockPreferencesPanel.checkBoxShowStopWatchIcon.text")); // NOI18N
         checkBoxShowStopWatchIcon.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkBoxShowStopWatchIconActionPerformed(evt);

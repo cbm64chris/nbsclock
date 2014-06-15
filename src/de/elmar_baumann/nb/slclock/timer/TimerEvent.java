@@ -212,7 +212,7 @@ public final class TimerEvent {
         return getDisplayNameGui();
     }
 
-    static class TimerEventCmpAsc implements Comparator<TimerEvent> {
+    public static class TimerEventCmpAsc implements Comparator<TimerEvent> {
 
         private final Collator collator = Collator.getInstance();
 

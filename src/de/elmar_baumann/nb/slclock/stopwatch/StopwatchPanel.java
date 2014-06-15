@@ -130,7 +130,10 @@ public class StopwatchPanel extends javax.swing.JPanel {
             new String[]{
                 NbBundle.getMessage(StopwatchPanel.class, "StopwatchPanel.IntermediateResult.Column.Number"),
                 NbBundle.getMessage(StopwatchPanel.class, "StopwatchPanel.IntermediateResult.Column.SincePrevious"),
-                NbBundle.getMessage(StopwatchPanel.class, "StopwatchPanel.IntermediateResult.Column.SinceStart"),}) {
+                NbBundle.getMessage(StopwatchPanel.class, "StopwatchPanel.IntermediateResult.Column.SinceStart"),
+            }) {
+
+            private static final long serialVersionUID = 1L;
 
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -190,7 +193,7 @@ public class StopwatchPanel extends javax.swing.JPanel {
             }
         });
 
-        org.openide.awt.Mnemonics.setLocalizedText(buttonItermediate, org.openide.util.NbBundle.getBundle(StopwatchPanel.class).getString("StopwatchPanel.buttonItermediate.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(buttonItermediate, org.openide.util.NbBundle.getMessage(StopwatchPanel.class, "StopwatchPanel.buttonItermediate.text")); // NOI18N
         buttonItermediate.setEnabled(false);
         buttonItermediate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -260,14 +263,14 @@ public class StopwatchPanel extends javax.swing.JPanel {
                     .addComponent(labelHundredthSeconds)))
         );
 
-        org.openide.awt.Mnemonics.setLocalizedText(buttonReset, org.openide.util.NbBundle.getBundle(StopwatchPanel.class).getString("StopwatchPanel.buttonReset.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(buttonReset, org.openide.util.NbBundle.getMessage(StopwatchPanel.class, "StopwatchPanel.buttonReset.text")); // NOI18N
         buttonReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonResetActionPerformed(evt);
             }
         });
 
-        panelIntermediateResults.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getBundle(StopwatchPanel.class).getString("StopwatchPanel.panelIntermediateResults.border.title"))); // NOI18N
+        panelIntermediateResults.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(StopwatchPanel.class, "StopwatchPanel.panelIntermediateResults.border.title"))); // NOI18N
 
         tableIntermediateResults.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -295,7 +298,7 @@ public class StopwatchPanel extends javax.swing.JPanel {
             .addComponent(scrollPaneIntermediateResults, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
         );
 
-        org.openide.awt.Mnemonics.setLocalizedText(checkBoxShowStopWatchIcon, org.openide.util.NbBundle.getBundle(StopwatchPanel.class).getString("StopwatchPanel.checkBoxShowStopWatchIcon.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(checkBoxShowStopWatchIcon, org.openide.util.NbBundle.getMessage(StopwatchPanel.class, "StopwatchPanel.checkBoxShowStopWatchIcon.text")); // NOI18N
         checkBoxShowStopWatchIcon.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkBoxShowStopWatchIconActionPerformed(evt);
