@@ -16,13 +16,26 @@ import org.netbeans.api.annotations.common.NullAllowed;
 @XmlAccessorType(XmlAccessType.NONE)
 public final class TimerEvent {
 
+    @XmlElement(name = "seconds")
     private int seconds;
+
+    @XmlElement(name = "remainingseconds")
     private long remainingSeconds;
+
     private long startTimeInNanos;
+
+    @XmlElement(name = "displayname")
     private String displayName;
+
+    @XmlElement(name = "verbose")
     private boolean verbose;
+
+    @XmlElement(name = "sound")
     private boolean sound;
+
     private boolean run;
+
+    @XmlElement(name = "persistent")
     private boolean persistent;
 
     public TimerEvent() {
@@ -45,7 +58,6 @@ public final class TimerEvent {
     /**
      * @return zero if not set, else set seconds
      */
-    @XmlElement(name = "seconds")
     public int getSeconds() {
         return seconds;
     }
@@ -63,7 +75,6 @@ public final class TimerEvent {
     /**
      * @return Default: null
      */
-    @XmlElement(name = "displayname")
     public String getDisplayName() {
         return displayName;
     }
@@ -72,7 +83,6 @@ public final class TimerEvent {
         this.displayName = displayName;
     }
 
-    @XmlElement(name = "verbose")
     public boolean isVerbose() {
         return verbose;
     }
@@ -85,7 +95,6 @@ public final class TimerEvent {
         return sound;
     }
 
-    @XmlElement(name = "sound")
     public void setSound(boolean sound) {
         this.sound = sound;
     }
@@ -106,7 +115,6 @@ public final class TimerEvent {
         this.persistent = persistent;
     }
 
-    @XmlElement(name = "remainingseconds")
     public long getRemainingSeconds() {
         return remainingSeconds;
     }
