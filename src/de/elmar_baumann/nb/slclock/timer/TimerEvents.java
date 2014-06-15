@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public final class TimerEvents {
 
+    @XmlElement(name = "event")
     private Collection<TimerEvent> events = new ArrayList<>();
 
     public TimerEvents() {
@@ -34,7 +35,6 @@ public final class TimerEvents {
         }
     }
 
-    @XmlElement(name = "event")
     public Collection<TimerEvent> getEvents() {
         return events; // JAXB: modifiable
     }

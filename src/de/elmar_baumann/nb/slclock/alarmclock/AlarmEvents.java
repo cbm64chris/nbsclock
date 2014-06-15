@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public final class AlarmEvents {
 
+    @XmlElement(name = "event")
     private Collection<AlarmEvent> events = new ArrayList<>();
 
     public AlarmEvents() {
@@ -26,7 +27,6 @@ public final class AlarmEvents {
         setEvents(new ArrayList<>(events));
     }
 
-    @XmlElement(name = "event")
     public Collection<AlarmEvent> getEvents() {
         return events; // JAXB: modifiable
     }

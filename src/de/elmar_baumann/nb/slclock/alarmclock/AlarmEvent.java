@@ -21,13 +21,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public final class AlarmEvent {
 
+    @XmlElement(name = "hour")
     private int hour;
+
+    @XmlElement(name = "minute")
     private int minute;
+
+    @XmlElement(name = "dayofweek")
     private Collection<DayOfWeek> daysOfWeek = new ArrayList<>();
+
+    @XmlElement(name = "displayname")
     private String displayName;
+
+    @XmlElement(name = "run")
     private boolean run;
+
+    @XmlElement(name = "sound")
     private boolean sound;
+
+    @XmlElement(name = "verbose")
     private boolean verbose;
+
     private boolean temporary;
 
     public AlarmEvent() {
@@ -50,7 +64,6 @@ public final class AlarmEvent {
         this.verbose = other.verbose;
     }
 
-    @XmlElement(name = "hour")
     public synchronized int getHour() {
         return hour;
     }
@@ -62,7 +75,6 @@ public final class AlarmEvent {
         this.hour = hour;
     }
 
-    @XmlElement(name = "minute")
     public synchronized int getMinute() {
         return minute;
     }
@@ -82,7 +94,6 @@ public final class AlarmEvent {
         this.temporary = temporary;
     }
 
-    @XmlElement(name = "dayofweek")
     public synchronized Collection<DayOfWeek> getDaysOfWeek() {
         return daysOfWeek; // JAXB: modifiable
     }
@@ -121,7 +132,6 @@ public final class AlarmEvent {
         return false;
     }
 
-    @XmlElement(name = "run")
     public synchronized boolean isRun() {
         return run;
     }
@@ -130,7 +140,6 @@ public final class AlarmEvent {
         this.run = run;
     }
 
-    @XmlElement(name = "sound")
     public synchronized boolean isSound() {
         return sound;
     }
@@ -139,7 +148,6 @@ public final class AlarmEvent {
         this.sound = sound;
     }
 
-    @XmlElement(name = "verbose")
     public boolean isVerbose() {
         return verbose;
     }
@@ -152,7 +160,6 @@ public final class AlarmEvent {
         this.displayName = displayName;
     }
 
-    @XmlElement(name = "displayname")
     public synchronized String getDisplayName() {
             return displayName;
         }
